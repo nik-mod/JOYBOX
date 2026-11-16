@@ -1,0 +1,1 @@
+export default function Loading() { return <main className="loading-page" id="main" role="status" aria-label="გვერდი იტვირთება"><p>ერთი წამით…</p><div className="loading-bar" /><div className="loading-bar" /><div className="loading-bar" /></main>; }
