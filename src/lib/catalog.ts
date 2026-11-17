@@ -1,6 +1,7 @@
 import 'server-only';
 import { cache } from 'react';
-import { createPublicClient } from './supabase';
+import { createHash } from 'node:crypto';
+import { createOrderClient, createPublicClient } from './supabase';
 import { paymentsAvailable } from './config';
 import type { Product, StoreSettings, PublicOrder } from './types';
 
@@ -26,7 +27,12 @@ export const getSettings = cache(async (): Promise<StoreSettings> => {
   if (error) throw new Error('მაღაზიის ინფორმაციის ჩატვირთვა ვერ მოხერხდა.');
   return data ? {...initial,...data,checkout_enabled:Boolean(data.checkout_enabled && paymentsAvailable())} : initial;
 });
-export async function getOrderByToken(_token: string): Promise<PublicOrder | null> {
-  // No orders can be placed until a payment provider and scoped order-token verification exist.
-  return null;
+export async function getOrderByToken(token: string): Promise<PublicOrder | null> {
+  if (!/^[A-Za-z0-9_-]{43}$/.test(token)) return null;
+  const client = createOrderClient();
+  if (!client) return null;
+  const token_digest = createHash('sha256').update(token).digest('hex');
+  const { data, error } = await client.rpc('guest_order_status', { token_digest });
+  if (error) throw new Error('შეკვეთის სტატუსი ვერ ჩაიტვირთა.');
+  return data as PublicOrder | null;
 }

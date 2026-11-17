@@ -1,4 +1,33 @@
 import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
 import { Brand } from './brand';
-export function Footer() { return <footer className="site-footer"><div className="footer-main container"><div className="footer-brand"><Brand large /><p>პატარა ყუთი.<br />დიდი სიხარული.</p></div><div className="footer-links"><h3>აღმოაჩინე</h3><Link href="/shop">ჩვენი ყუთები</Link><Link href="/how-it-works">როგორ მუშაობს?</Link><Link href="/about">ჯოიბოქსის შესახებ</Link></div><div className="footer-links"><h3>დაგეხმარებით</h3><Link href="/faq">კითხვები და პასუხები</Link><Link href="/delivery">მიწოდება</Link><Link href="/returns">დაბრუნება</Link><Link href="/contact">კონტაქტი <ArrowUpRight size={14} /></Link></div><div className="footer-note"><span className="eyebrow">მალე — საქართველოში</span><p>სიურპრიზისთვის<br />ყოველთვის არის მიზეზი.</p><Link href="/shop" className="text-link">გაიცანი ყუთები <ArrowUpRight size={19} /></Link></div></div><div className="footer-bottom container"><span>© {new Date().getFullYear()} JOYBOX</span><span className="footer-legal"><Link href="/privacy">კონფიდენციალურობა</Link><Link href="/terms">წესები და პირობები</Link></span><span>შექმნილია სიხარულისთვის</span></div></footer>; }
+import { FooterMotion } from './footer-motion';
+
+export function Footer() {
+  return (
+    <FooterMotion>
+      <div className="footer-edition container">
+        <div className="footer-brand"><Brand large /></div>
+        <nav className="footer-links" aria-label="ჯოიბოქსის შესახებ">
+          <h3>აღმოაჩინე</h3>
+          <Link href="/shop">ჩვენი ყუთები</Link>
+          <Link href="/how-it-works">როგორ მუშაობს?</Link>
+          <Link href="/about">ჯოიბოქსის შესახებ</Link>
+        </nav>
+        <nav className="footer-links" aria-label="დახმარება">
+          <h3>დაგეხმარებით</h3>
+          <Link href="/faq">კითხვები და პასუხები</Link>
+          <Link href="/delivery">მიწოდება</Link>
+          <Link href="/returns">დაბრუნება</Link>
+          <Link href="/contact">კონტაქტი</Link>
+        </nav>
+      </div>
+      <div className="footer-bottom container">
+        <span>© {new Date().getFullYear()} JOYBOX</span>
+        <span className="footer-legal">
+          <Link href="/privacy">კონფიდენციალურობა</Link>
+          <Link href="/terms">წესები და პირობები</Link>
+        </span>
+      </div>
+    </FooterMotion>
+  );
+}

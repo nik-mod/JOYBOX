@@ -1,6 +1,11 @@
 export function formatMoney(minor: number): string {
   if (!Number.isSafeInteger(minor) || minor < 0) throw new Error('Invalid monetary amount');
-  return new Intl.NumberFormat('ka-GE', { style: 'currency', currency: 'GEL', minimumFractionDigits: minor % 100 ? 2 : 0, maximumFractionDigits: 2 }).format(minor / 100);
+  // Chromium builds without Georgian ICU data would otherwise render a different price on hydration.
+  const tetri = minor % 100;
+  const digits = String((minor - tetri) / 100);
+  const lari = digits.length > 4 ? digits.replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0') : digits;
+  const fraction = tetri ? ',' + String(tetri).padStart(2, '0') : '';
+  return lari + fraction + '\u00a0₾';
 }
 export function calculateTotal(items: {price_minor: number; quantity: number}[], deliveryMinor: number) {
   if (!Number.isSafeInteger(deliveryMinor) || deliveryMinor < 0) throw new Error('Invalid delivery amount');

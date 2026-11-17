@@ -1,18 +1,87 @@
 'use client';
+
 import Link from 'next/link';
 import { useRef } from 'react';
-import { ArrowRight, MousePointer2, Truck, Sparkles, ArrowUpRight, PackageCheck, Gift, Puzzle, ChevronDown } from 'lucide-react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useGSAP } from '@gsap/react';
-import { BoxMark } from './brand';
+import { ArrowDown, ArrowRight, ArrowUpRight, PackageCheck, Gift, Puzzle } from 'lucide-react';
 import type { Product } from '@/lib/types';
-import { ProductGrid } from './products';
-gsap.registerPlugin(useGSAP, ScrollTrigger);
-export function HowSteps() { return <div className="how-steps"><article className="how-step"><div className="step-art"><MousePointer2 size={39} strokeWidth={1.5} /></div><div><span className="step-number">01</span><h3>აირჩიე ყუთი</h3><p>იპოვე შენი პატარასთვის <br />შესაფერისი სიურპრიზი.</p></div></article><ArrowRight className="step-arrow" size={25} /><article className="how-step"><div className="step-art"><Truck size={42} strokeWidth={1.5} /></div><div><span className="step-number">02</span><h3>შეუკვეთე</h3><p>მიუთითე მისამართი. <br />დანარჩენზე ჩვენ ვიზრუნებთ.</p></div></article><ArrowRight className="step-arrow" size={25} /><article className="how-step"><div className="step-art"><BoxMark /></div><div><span className="step-number">03</span><h3>გახსენი სიურპრიზი!</h3><p>ყველაზე საინტერესო <br />ყუთის შიგნით გელოდება.</p></div></article></div>; }
-export function Home({ products }: { products: Product[] }) {
-  const root = useRef<HTMLDivElement>(null);
-  useGSAP(() => { const media = gsap.matchMedia(); media.add('(prefers-reduced-motion: no-preference)', () => { gsap.from('.hero-copy > *', { y: 24, opacity: 0, stagger: .1, duration: .75, ease: 'power2.out', delay: .12, clearProps: 'transform,opacity' }); gsap.from('.hero-photo', { opacity: .7, duration: 1.1, ease: 'power2.out' }); gsap.utils.toArray<HTMLElement>('.reveal').forEach(el => gsap.from(el, { y: 24, opacity: 0, duration: .65, scrollTrigger: { trigger: el, start: 'top 92%', once: true }, clearProps: 'transform,opacity' })); }); media.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => gsap.to('.hero-photo', { y: 60, scale: 1.035, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: .6 } })); return () => media.revert(); }, { scope: root });
-  return <main id="main" ref={root}><section className="hero"><div className="hero-photo" role="img" aria-label="ჯოიბოქსის კონცეპტუალური სცენა — ღია სათამაშოების ყუთი თბილ, მუქ ლურჯ ოთახში" /><div className="hero-shade" /><div className="hero-content container"><div className="hero-copy"><span className="hero-kicker"><span />სიხარული ყუთშია!</span><h1>პატარა ყუთი.<br />დიდი <em>სიხარული.</em></h1><p>სათამაშოები, თამაშები და ახალი აღმოჩენები —<br className="desktop-break" /> ერთი ყუთი, რომელიც სიურპრიზებით არის სავსე.</p><Link className="button button-yellow" href="/shop">ყუთების დათვალიერება <ArrowRight size={22} /></Link><span className="hero-small"><Gift size={16} /> ბავშვებისთვის. სიხარულით შერჩეული.</span></div></div><span className="concept-caption">ბრენდის კონცეპტუალური ვიზუალი</span><a className="scroll-cue" href="#how" aria-label="როგორ მუშაობს"><ChevronDown size={20} /></a></section><section className="how-panel" id="how"><div className="container"><div className="section-heading centered reveal"><span className="eyebrow">სამი ნაბიჯი სიხარულამდე</span><h2>როგორ მუშაობს?</h2></div><HowSteps /></div></section><section className="collection-section container"><div className="section-heading split reveal"><div><span className="eyebrow">შენთვის შერჩეული</span><h2>სიურპრიზს თავისი<br />ზომა აქვს.</h2></div><p>პატარა ყურადღებიდან დიდ აღფრთოვანებამდე —<br />გაიცანი ჯოიბოქსის სამყარო.</p></div>{products.length ? <ProductGrid products={products.slice(0, 3)} /> : <div className="planned-collection reveal">{[{ n: '01', name: 'Mini', ka: 'პატარა ყუთი, დიდი ღიმილი', desc: 'პატარა სიურპრიზი ჩვეულებრივი დღის გასახალისებლად.', cls: 'mini' }, { n: '02', name: 'Classic', ka: 'სიხარულის კლასიკა', desc: 'თამაშისა და აღმოჩენის ახალი თავგადასავალი.', cls: 'classic' }, { n: '03', name: 'Mega', ka: 'მეტი აღმოსაჩენი', desc: 'დიდი ყუთი განსაკუთრებული სიურპრიზისთვის.', cls: 'mega' }].map(box => <article className={`format-item ${box.cls}`} key={box.name}><div className="format-top"><span>{box.n} / JOYBOX</span><span className="coming-label">მალე</span></div><div className="format-illustration"><BoxMark /></div><div className="format-copy"><h3>{box.name}</h3><h4>{box.ka}</h4><p>{box.desc}</p></div></article>)}</div>}<div className="collection-bottom"><p>{products.length ? 'აირჩიე ყუთი და აღმოაჩინე შენი სიურპრიზი.' : 'კოლექცია მზადდება. ყუთების დეტალებსა და ფასებს მალე გაგიზიარებთ.'}</p><Link href="/shop" className="text-link">ყველა ყუთი <ArrowRight size={19} /></Link></div></section><section className="brand-story"><div className="container story-grid"><div className="story-visual reveal"><img src="/brand/joybox-approved.png" width="1672" height="941" alt="ჯოიბოქსის ოფიციალური ქართული ლოგო — ღია ყუთი და სათამაშოები" /><span>JOYBOX · სიხარულით შექმნილი</span></div><div className="story-copy reveal"><span className="eyebrow">უფრო მეტი, ვიდრე საჩუქარი</span><h2>ის მომენტი,<br />როცა თვალები<br /><em>უბრწყინდება.</em></h2><p>გვჯერა, რომ ყველაზე დასამახსოვრებელი საჩუქარი მხოლოდ ნივთი არ არის. ეს მოლოდინია, ცნობისმოყვარეობა და ახალი აღმოჩენის სიხარული.</p><p>ჯოიბოქსი სწორედ ამ პატარა, ბედნიერი მომენტებისთვის იქმნება.</p><Link href="/about" className="text-link">გაიცანი ჯოიბოქსი <ArrowUpRight size={19} /></Link></div></div></section><section className="values-strip container"><div><PackageCheck /><span>გააზრებულად შერჩეული</span></div><div><Puzzle /><span>თამაშით აღმოჩენა</span></div><div><Gift /><span>საჩუქრად შექმნილი</span></div></section><section className="faq-home container"><div className="section-heading reveal"><span className="eyebrow">კითხვა გაქვს?</span><h2>სიურპრიზი ყუთშია.<br />პასუხები — აქ.</h2><Link href="/faq" className="text-link">ყველა კითხვა <ArrowRight size={19} /></Link></div><div className="faq-list reveal"><details><summary>რა არის ჯოიბოქსი?</summary><p>ჯოიბოქსი არის სიურპრიზის ყუთი ბავშვებისთვის. მასში სათამაშოების, თამაშებისა და შემოქმედებითი ნივთების შერჩეული კომბინაცია დაგხვდება. კონკრეტული ყუთის ზოგად კატეგორიებს მის გვერდზე გაეცნობი.</p></details><details><summary>წინასწარ მეცოდინება, რა არის ყუთში?</summary><p>ყუთის ზუსტი შიგთავსი სიურპრიზად რჩება. შეძენამდე გაეცნობი ნივთების კატეგორიებს, ასაკობრივ რეკომენდაციასა და უსაფრთხოების ინფორმაციას.</p></details><details><summary>როდის შევძლებ შეკვეთას?</summary><p>პირველი კოლექცია მზადდება. შეკვეთის შესაძლებლობა გამოჩნდება მას შემდეგ, რაც ყუთები, მიწოდების პირობები და გადახდის სისტემა მზად იქნება.</p></details></div></section></main>;
-}
+import { HowFilm } from './how-film';
+import { PackagingShowcase } from './packaging-showcase';
+import { useHomeMotion } from './home-motion';
+import './home-cinema.css';
 
+export function Home({ products }: { products: Product[] }) {
+  const root = useRef<HTMLElement>(null);
+  useHomeMotion(root);
+
+  return (
+    <main id="main" ref={root} className="home-v2">
+      <section className="hero hero-cinema">
+        <picture className="hero-photo">
+          <source media="(max-width: 850px)" srcSet="/brand/hero-compact.webp" />
+          <img src="/brand/hero-concept.webp" width={1672} height={941}
+            alt="ღია მუყაოს ყუთი სათამაშოებით, თბილად განათებულ ოთახში" fetchPriority="high" />
+        </picture>
+        <div className="hero-shade" aria-hidden="true" />
+        <div className="hero-content container">
+          <div className="hero-copy">
+            <h1 className="hero-title">
+              <span className="hero-title-line">პატარა ყუთი.</span>{' '}
+              <span className="hero-title-line">დიდი <em>სიხარული.</em></span>
+            </h1>
+            <p>სიურპრიზის ყუთები ბავშვებისთვის, სათამაშოებით, თამაშებითა და შემოქმედებითი აღმოჩენებით.</p>
+            <div className="hero-action">
+              <Link className="button button-yellow" href="/shop">ყუთების დათვალიერება <ArrowRight size={22} /></Link>
+              <Link className="hero-chapter-link" href="/#how"><ArrowDown size={16} aria-hidden="true" /> როგორ მუშაობს?</Link>
+            </div>
+          </div>
+        </div>
+        <span className="concept-caption">ბრენდის კონცეპტუალური ვიზუალი</span>
+        <div className="hero-shutter" aria-hidden="true" />
+      </section>
+
+      <HowFilm />
+
+      <PackagingShowcase products={products} />
+
+      <section className="brand-story story-edition" id="unboxing">
+        <div className="container story-edition-grid">
+          <div className="story-edition-copy">
+            <h2>სიურპრიზი<br />ყუთშია.</h2>
+            <p>ყუთის ზუსტი შიგთავსი სიურპრიზად რჩება. არჩევამდე გაიგებ რეკომენდებულ ასაკს, ნივთების ზოგად კატეგორიებსა და უსაფრთხოების ინფორმაციას.</p>
+            <Link href="/about" className="text-link">ჯოიბოქსის შესახებ <ArrowUpRight size={19} /></Link>
+          </div>
+          <img className="story-logo" src="/brand/joybox-story.webp" alt="ჯოიბოქსის ლოგო"
+            width={1120} height={630} loading="lazy" />
+        </div>
+      </section>
+
+      <section className="why-section why-edition container" aria-labelledby="why-joybox">
+        <div className="section-heading"><h2 id="why-joybox">რატომ ჯოიბოქსი?</h2></div>
+        <ul>
+          <li><PackageCheck /><div><h3>ასაკისთვის შესაფერისი არჩევანი</h3><p>რეკომენდებული ასაკი და უსაფრთხოების ინფორმაცია თითოეული ყუთის გვერდზეა.</p></div></li>
+          <li><Puzzle /><div><h3>თამაშის ახალი იდეები</h3><p>სათამაშოები, თამაშები და შემოქმედებითი ნივთები ერთ ყუთში.</p></div></li>
+          <li><Gift /><div><h3>სიურპრიზი საჩუქრად</h3><p>შენ ირჩევ ყუთს. აღმოჩენის სიხარული იმას რჩება, ვინც გახსნის.</p></div></li>
+        </ul>
+      </section>
+
+      <section className="faq-home faq-edition container">
+        <div className="section-heading">
+          <h2>ხშირად დასმული კითხვები</h2>
+          <Link href="/faq" className="text-link">ყველა კითხვა <ArrowRight size={19} /></Link>
+        </div>
+        <div className="faq-list">
+          <details><summary>რა არის ჯოიბოქსი?</summary><p>ჯოიბოქსი არის სიურპრიზის ყუთი ბავშვებისთვის, სათამაშოებით, თამაშებითა და შემოქმედებითი ნივთებით.</p></details>
+          <details><summary>წინასწარ მეცოდინება, რა არის ყუთში?</summary><p>ზუსტი შიგთავსი სიურპრიზად რჩება. ყუთის აღწერაში ნახავ ნივთების კატეგორიებს, ასაკობრივ რეკომენდაციასა და უსაფრთხოების ინფორმაციას.</p></details>
+          <details><summary>შეკვეთისთვის ანგარიში მჭირდება?</summary><p>შეკვეთის გაფორმება ანგარიშის შექმნის გარეშე იქნება შესაძლებელი. მიმდინარე ხელმისაწვდომობა კატალოგში ჩანს.</p></details>
+        </div>
+      </section>
+
+      <section className="home-final final-edition">
+        <div className="container">
+          <h2>პატარა ყუთი.<br />დიდი სიხარული.</h2>
+          <Link className="button button-navy" href="/shop">ჯოიბოქსის ყუთები <ArrowRight size={20} /></Link>
+        </div>
+      </section>
+    </main>
+  );
+}

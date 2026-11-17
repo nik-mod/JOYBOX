@@ -1,0 +1,26 @@
+JOYBOX — Orbital showcase model credits
+
+Teddy bear and Plush rabbit by Innerscene, CC0 1.0.
+https://www.innerscene.com/tools/library/3d-parts/teddy-bear-8cc03913
+https://www.innerscene.com/tools/library/3d-parts/plush-rabbit-b2b43520
+
+Toy Car by Guido Odendahl and Eric Chadwick, Khronos glTF Sample Assets, CC0 1.0.
+https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/ToyCar
+Changes: removed the display cloth and cameras, simplified the mesh, and adapted the glass for real-time rendering.
+
+The following scans are from Google Scanned Objects, © 2020 Google LLC, CC BY 4.0.
+https://research.google/blog/scanned-objects-by-google-research-a-dataset-of-3d-scanned-common-household-items/
+https://creativecommons.org/licenses/by/4.0/
+
+Dino 3 — https://fuel.gazebosim.org/1.0/GoogleResearch/models/Dino_3
+Schleich S Bayala Unicorn 70432 — https://fuel.gazebosim.org/1.0/GoogleResearch/models/Schleich_S_Bayala_Unicorn_70432
+3D Dollhouse Happy Brother — https://fuel.gazebosim.org/1.0/GoogleResearch/models/3D_Dollhouse_Happy_Brother
+Creative Blocks (35 MM.) — https://fuel.gazebosim.org/1.0/GoogleResearch/models/CREATIVE_BLOCKS_35_MM
+Ladybug Bead — https://fuel.gazebosim.org/1.0/GoogleResearch/models/LADYBUG_BEAD
+
+Changes: meshes and textures were optimized for this scene. Scans were converted to GLB by codepawl and adapted for the showcase.
+https://huggingface.co/datasets/codepawl/scanned-objects-glb
+
+CC0 1.0 — https://creativecommons.org/publicdomain/zero/1.0/
+
+The carton geometry, puzzle cube, rocket, bracelets, and paint set were made for JOYBOX. The toys shown are conceptual illustrations.

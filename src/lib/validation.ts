@@ -1,9 +1,14 @@
 import { z } from 'zod';
+export const georgianMobile = z.string().trim().max(32)
+  .transform(value => value.replace(/[\s()-]/g, ''))
+  .pipe(z.string().regex(/^(?:(?:\+|00)?995)?5\d{8}$/))
+  .transform(value => '+995' + value.slice(-9));
+
 export const checkoutSchema = z.object({
   items: z.array(z.object({product_id:z.uuid(),quantity:z.number().int().min(1).max(99)})).min(1).max(30)
     .refine(items => new Set(items.map(item => item.product_id)).size === items.length, 'Duplicate products'),
   customer:z.object({
-    name:z.string().trim().min(2).max(120),phone:z.string().trim().regex(/^(?:\+995\s?)?5\d{8}$/),
+    name:z.string().trim().min(2).max(120),phone:georgianMobile,
     email:z.union([z.email().max(254),z.literal('')]).optional(), city:z.string().trim().min(1).max(100),
     address:z.string().trim().min(8).max(500),notes:z.string().trim().max(1000).optional(),
   }),idempotency_key:z.uuid(),
@@ -14,6 +19,7 @@ export const productSchema = z.object({
   price_minor:z.coerce.number().int().min(1).max(10000000),stock:z.coerce.number().int().min(0).max(100000),
   age_label:z.string().trim().min(1).max(60),dimensions:z.string().max(120),safety_info:z.string().trim().min(5).max(2000),
   image_url:z.url().refine(url => url.startsWith('https://'), 'HTTPS required'),
+  packaging:z.enum(['navy-yellow','pink-berry']).nullable().optional(),
   published:z.boolean(),
 });
 export const settingsSchema = z.object({

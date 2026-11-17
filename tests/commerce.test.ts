@@ -11,7 +11,9 @@ test('money uses integer arithmetic and rejects malformed totals',()=>{
   for(const quantity of [0,-1,1.5,100,NaN])assert.throws(()=>calculateTotal([{price_minor:100,quantity}],0));
   assert.throws(()=>calculateTotal([{price_minor:Number.MAX_SAFE_INTEGER,quantity:2}],0));
   assert.throws(()=>calculateTotal([],1.2));assert.throws(()=>formatMoney(-10));
-  assert.match(formatMoney(1200),/12/);assert.match(formatMoney(1234),/12[.,]34/);
+  assert.equal(formatMoney(1200), '12\u00a0₾');
+  assert.equal(formatMoney(1234), '12,34\u00a0₾');
+  assert.equal(formatMoney(1200101), '12\u00a0001,01\u00a0₾');
 });
 test('checkout accepts guest data without account or card fields',()=>{assert.equal(checkoutSchema.safeParse(validCheckout).success,true);});
 test('checkout rejects duplicates, invalid phone, empty cart, unsafe quantities',()=>{

@@ -1,3 +1,17 @@
 import { Cart } from '@/components/cart';
-export const metadata = { title: 'ჩემი კალათა' };
-export default function CartPage() { return <main className="page-shell container" id="main"><div className="page-header"><span className="eyebrow">შენი არჩევანი</span><h1>ჩემი კალათა</h1></div><Cart /></main>; }
+import Link from 'next/link';
+import { ChevronLeft } from 'lucide-react';
+
+export const metadata = { title: 'ჩემი კალათა', robots: { index: false, follow: false } };
+
+export default function CartPage() {
+  return (
+    <main className="page-shell container commerce-flow" id="main">
+      <header className="commerce-heading">
+        <Link className="commerce-back" href="/shop"><ChevronLeft size={16} /> ყუთები</Link>
+        <h1>ჩემი კალათა</h1>
+      </header>
+      <Cart />
+    </main>
+  );
+}

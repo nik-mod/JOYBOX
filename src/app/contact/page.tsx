@@ -1,5 +1,6 @@
+import { storefrontMetadata } from '@/lib/metadata';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { getSettings } from '@/lib/catalog';
-export const metadata = { title: 'კონტაქტი' };
+export const metadata = storefrontMetadata('/contact', 'კონტაქტი', 'ჯოიბოქსის საკონტაქტო ინფორმაცია და დახმარება შეკვეთებთან დაკავშირებით.');
 export default async function ContactPage() { const settings = await getSettings(); return <main className="page-shell container" id="main"><div className="page-header"><span className="eyebrow">მოხარული ვიქნებით დაგეხმაროთ</span><h1>დაგვიკავშირდი</h1><p>ყუთზე, შეკვეთაზე ან მიწოდებაზე კითხვა გაქვს? საკონტაქტო არხებს აქ იპოვი.</p></div>{settings.contact_email || settings.contact_phone ? <div className="contact-options">{settings.contact_email && <div className="contact-option"><h2>ელფოსტა</h2><a href={`mailto:${settings.contact_email}`}>{settings.contact_email}</a></div>}{settings.contact_phone && <div className="contact-option"><h2>ტელეფონი</h2><a href={`tel:${settings.contact_phone}`}>{settings.contact_phone}</a></div>}</div> : <div className="prose"><div className="notice">საკონტაქტო არხები გამოქვეყნდება პირველი კოლექციის გაშვებამდე.</div><p>მანამდე გაეცანი ჯოიბოქსის შესახებ ყველაზე ხშირად დასმულ კითხვებს.</p></div>}<Link className="text-link" style={{ marginTop: 30 }} href="/faq">კითხვები და პასუხები <ArrowRight size={18} /></Link></main>; }

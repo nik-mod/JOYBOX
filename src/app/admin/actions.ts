@@ -20,13 +20,22 @@ export async function signIn(form:FormData) {
 export async function signOut(){const client=await createSessionClient();await client?.auth.signOut();redirect('/admin/login');}
 export async function saveProduct(form:FormData){
   const {client}=await requireAdmin();
-  const parsed=productSchema.safeParse({...Object.fromEntries(form.entries()),published:form.get('published')==='on'});
+  const parsed=productSchema.safeParse({
+    ...Object.fromEntries(form.entries()),
+    packaging: form.get('packaging') || null,
+    published:form.get('published')==='on',
+  });
   if(!parsed.success) redirect('/admin/products?state=invalid');
   const rawId=form.get('id');
   if(rawId && !z.uuid().safeParse(rawId).success) redirect('/admin/products?state=invalid');
-  const value={...parsed.data,images:[parsed.data.image_url]};
-  const result=rawId ? await client.from('products').update(value).eq('id',String(rawId)) : await client.from('products').insert(value);
-  if(result.error) redirect('/admin/products?state=error');
+  const version = z.iso.datetime({ offset: true }).safeParse(form.get('updated_at'));
+  if (rawId && !version.success) redirect('/admin/products?state=invalid');
+  const result = rawId
+    ? await client.from('products').update(parsed.data).eq('id',String(rawId))
+      .eq('updated_at', version.data!).select('id').maybeSingle()
+    : await client.from('products').insert(parsed.data).select('id').single();
+  if (result.error) redirect('/admin/products?state=error');
+  if (!result.data) redirect('/admin/products?state=stale');
   revalidatePath('/','layout');redirect('/admin/products?state=saved');
 }
 export async function archiveProduct(form:FormData){
@@ -53,7 +62,7 @@ export async function saveSettings(form:FormData){
   try{input={contact_email:String(form.get('contact_email')??''),contact_phone:String(form.get('contact_phone')??''),delivery_zones:JSON.parse(String(form.get('delivery_zones')??'[]')),policies:Object.fromEntries(['delivery','returns','privacy','terms'].map(key=>[key,String(form.get(key)??'')]))};}
   catch{redirect('/admin/settings?state=invalid');}
   const parsed=settingsSchema.safeParse(input);if(!parsed.success)redirect('/admin/settings?state=invalid');
-  const {error}=await client.from('store_settings').upsert({id:1,...parsed.data,checkout_enabled:false});
+  const {error}=await client.from('store_settings').upsert({id:1,...parsed.data});
   if(error)redirect('/admin/settings?state=error');
   revalidatePath('/','layout');redirect('/admin/settings?state=saved');
 }

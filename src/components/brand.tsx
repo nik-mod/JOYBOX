@@ -1,7 +1,11 @@
 import Link from 'next/link';
 
 export function Brand({ large = false }: { large?: boolean }) {
-  return <Link href="/" className={`brand ${large ? 'brand-large' : ''}`} aria-label="ჯოიბოქსი — მთავარი"><img src="/brand/joybox-approved.png" alt="ჯოიბოქსი" width="1672" height="941" /></Link>;
+  return (
+    <Link href="/" className={`brand ${large ? 'brand-large' : ''}`} aria-label="ჯოიბოქსი — მთავარი">
+      <img src="/brand/joybox-header.webp" alt="" width="384" height="216" />
+    </Link>
+  );
 }
 
 export function BoxMark({ className = '' }: { className?: string }) {

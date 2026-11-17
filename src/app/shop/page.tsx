@@ -1,5 +1,24 @@
-import type { Metadata } from 'next';
+import Link from 'next/link';
+import { ChevronLeft } from 'lucide-react';
+import { connection } from 'next/server';
 import { getProducts } from '@/lib/catalog';
-import { Catalog } from '@/components/products';
-export const metadata: Metadata = { title: 'სიურპრიზის ყუთები' };
-export default async function ShopPage() { return <main className="page-shell container" id="main"><div className="page-header"><span className="eyebrow">JOYBOX კოლექცია</span><h1>რომელ სიურპრიზს აირჩევ?</h1><p>ერთი ყუთი, უამრავი აღმოჩენა. გაეცანი კოლექციას და შეარჩიე შენი პატარასთვის შესაფერისი სიურპრიზი.</p></div><Catalog products={await getProducts()} /></main>; }
+import { ShopExperience } from '@/components/shop-experience';
+import { storefrontMetadata } from '@/lib/metadata';
+import './shop.css';
+
+export const metadata = storefrontMetadata(
+  '/shop', 'სიურპრიზის ყუთები', 'დაათვალიერე ჯოიბოქსის კოლექცია და გაეცანი ფასებს, შეფუთვის ფერებსა და რეკომენდებულ ასაკს.',
+);
+export default async function ShopPage() {
+  await connection();
+  const products = await getProducts();
+  return (
+    <main className="page-shell container shop-editions" id="main">
+      <header className="commerce-heading">
+        <Link href="/" className="commerce-back"><ChevronLeft size={16} aria-hidden="true" /> მთავარი</Link>
+        <h1>რომელ სიურპრიზს აირჩევ?</h1>
+      </header>
+      <ShopExperience products={products} />
+    </main>
+  );
+}
