@@ -201,3 +201,28 @@
   .shop-no-results { grid-template-columns: minmax(0, 1fr); }
   .shop-no-results .button { grid-column: 1; }
 }
+/* Direct, reversible choices stay visible before opening the advanced filters. */
+.shop-quick-filters { display: flex; align-items: stretch; gap: 24px; padding-top: 14px; border-bottom: 1px solid var(--shop-line); }
+.shop-quick-filters button { position: relative; display: flex; align-items: center; gap: 9px; background: transparent; padding: 14px 0; min-height: 50px; color: var(--shop-muted); font-size: 14px; font-weight: 700; }
+.shop-quick-filters button::after { content: ''; position: absolute; inset: auto 0 -1px; height: 2px; background: var(--shop-ink); transform: scaleX(0); transform-origin: left; transition: transform .35s var(--shop-ease); }
+.shop-quick-filters button[aria-pressed='true'] { color: var(--shop-ink); }
+.shop-quick-filters button[aria-pressed='true']::after { transform: scaleX(1); }
+.shop-quick-filters button > span:last-child:not(.shop-swatch) { font-size: 11px; font-weight: 400; }
+.shop-editions .product-image-media picture { width: 100%; height: 100%; display: block; }
+.shop-editions .product-item h3 { font-size: clamp(22px,2vw,28px); line-height: 1.4; }
+.shop-editions .product-item p { font-size: 14px; line-height: 1.8; }
+.shop-editions .product-meta { font-size: 13px; align-items: center; }
+.shop-editions .product-item .product-price { font-size: 22px; }
+.shop-editions .product-item .button:disabled { opacity: .72; }
+.shop-menu-panel { transform: translateY(-6px) scale(.985); transform-origin: top right; transition: opacity .24s ease, transform .35s var(--shop-ease), visibility 0s linear .35s; }
+.shop-menu-panel[data-open='true'] { transform: translateY(0) scale(1); }
+.shop-menu-chevron { transition: transform .3s var(--shop-ease); }
+.shop-menu-trigger[aria-expanded='true'] .shop-menu-chevron { transform: rotate(180deg); }
+@media(max-width:600px) {
+ .shop-quick-filters { gap: 16px; justify-content: space-between; }
+ .shop-quick-filters button { font-size: 12px; gap: 5px; }
+ .shop-quick-filters .shop-swatch { width: 10px; height: 10px; }
+ .shop-quick-filters button > span:last-child:not(.shop-swatch) { display: none; }
+ .shop-search input { font-size: 16px; }
+}
+@media(prefers-reduced-motion:reduce) { .shop-menu-panel, .shop-menu-chevron, .shop-quick-filters button::after { transition: none; } }

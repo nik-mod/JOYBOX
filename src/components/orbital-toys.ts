@@ -7,7 +7,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
-const names = ['teddy', 'rabbit', 'car', 'dinosaur', 'unicorn', 'doll', 'blocks', 'ladybug'] as const;
+const names = ['teddy', 'rabbit', 'car', 'dinosaur', 'unicorn', 'blocks'] as const;
 type ToyName = typeof names[number];
 type Contents = Record<ToyName, Group>;
 
@@ -17,9 +17,11 @@ const tissueLine = new Plane(new Vector3(0, 1, 0), -.495);
 export async function loadOrbitalToys(signal: AbortSignal) {
   const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   const results = await Promise.allSettled(names.map(async (name) => {
-    const response = await fetch(`/brand/orbit-models/${name}.glb`, { signal });
+    const response = await fetch(`/brand/orbit-models/${name === 'teddy' ? 'teddy-scan' : name === 'unicorn' ? 'unicorn-hq' : name}.glb`, { signal });
     if (!response.ok) throw new Error(`Unable to load ${name}`);
     const { scene } = await loader.parseAsync(await response.arrayBuffer(), '');
+    if (name === 'teddy') scene.rotation.x = Math.PI / 2;
+    scene.updateMatrixWorld(true);
     return [name, scene] as const;
   }));
   const models = results.flatMap(result => result.status === 'fulfilled' ? [result.value] : []);
@@ -173,6 +175,7 @@ function paintSet() {
   brush.rotation.set(Math.PI / 2.24, Math.PI / 3.9, -Math.PI / 2.8);
   brush.position.set(-.16, .065, -.055);
   model.add(brush);
+  model.rotation.x = .26;
   return model;
 }
 
@@ -180,21 +183,24 @@ type Placement = [object: Object3D, x: number, z: number, yaw: number, height: n
 
 export function arrangeOrbitalToys(models: Contents, pink: boolean) {
   const placements: Placement[] = pink ? [
-    [models.rabbit, -.58, -.46, .13, .86, .66, .552],
-    [models.unicorn, .58, -.43, 1.13, .54, .77, .55],
-    [models.doll, .01, -.57, .25, .61, .49, .55],
-    [bracelets(), -.54, .32, -.21, .19, .49, .56],
-    [paintSet(), .52, .32, -.25, .16, .68, .65],
-    [models.ladybug, -.08, .21, -.48, .146, .36, .552],
+    [models.rabbit, -.60, -.39, .13, 1.30, .78, .55],
+    [models.teddy.clone(true), .10, -.48, -.12, 1.06, .89, .55],
+    [models.unicorn, .59, .13, .65, .89, .94, .56],
+    [models.blocks.clone(true), -.12, .13, -.18, .48, .66, .55],
+    [bracelets(), -.62, .56, -.21, .31, .72, .57],
+    [paintSet(), .41, .46, -.15, .34, .88, .64],
   ] : [
-    [models.teddy, -.55, -.46, .10, .83, .68, .554],
-    [rocket(), .65, -.56, .23, .72, .58, .55],
-    [models.dinosaur, .15, -.085, -.25, .38, .69, .552],
-    [puzzleCube(), -.65, .37, -.26, .395, .44, .548],
-    [models.car, .52, .37, 1.20, .30, .73, .64],
-    [models.blocks, -.18, .20, .17, .35, .47, .55],
+    [models.teddy, -.43, -.38, -.12, 1.36, 1.13, .55],
+    [rocket(), .59, -.47, .23, 1.14, .70, .55],
+    [models.dinosaur, .47, .10, -.35, .60, .96, .55],
+    [models.blocks, -.57, .19, .14, .46, .70, .55],
+    [puzzleCube(), -.16, .59, -.22, .48, .51, .56],
+    [models.car, .61, .61, 1.37, .38, .80, .57],
   ];
   return placements.map(([object, x, z, yaw, targetHeight, limit, raised]) => {
+    // A cloned shared model may already have been centered for the other box.
+    object.position.set(0, 0, 0);
+    object.updateMatrixWorld(true);
     const bounds = new Box3().setFromObject(object);
     const center = bounds.getCenter(new Vector3());
     const size = bounds.getSize(new Vector3());
@@ -214,11 +220,12 @@ export function arrangeOrbitalToys(models: Contents, pink: boolean) {
         if (material instanceof MeshStandardMaterial) {
           material.clippingPlanes = [tissueLine];
           material.clipShadows = true;
+          if (material.map) material.map.anisotropy = 4;
         }
       }
-      node.castShadow = !(node instanceof InstancedMesh);
+      node.castShadow = true;
       node.receiveShadow = true;
     });
-    return { toy, yaw, z, raised };
+    return { toy, yaw, z, raised, footprint: [size.x * scale, size.z * scale] as const };
   });
 }

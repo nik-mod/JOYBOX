@@ -242,8 +242,9 @@
 .edition-action:hover, .edition-catalog-link:hover { text-decoration-thickness: 2px; }
 
 .home-v2 .story-edition {
-  background: #061744;
-  color: var(--cream);
+  /* Keep the studio palette here too: route CSS may load after global styles. */
+  background: #f2e3cc;
+  color: #142b4b;
   padding: clamp(55px, 9vw, 150px) 0;
 }
 
@@ -254,8 +255,8 @@
   gap: clamp(22px, 5vw, 90px);
 }
 
-.story-edition-copy p { max-width: 36ch; color: #f5ebd9; margin: 25px 0 12px; }
-.story-edition-copy .text-link { color: var(--yellow); }
+.story-edition-copy p { max-width: 36ch; color: #4a5361; margin: 25px 0 12px; }
+.story-edition-copy .text-link { color: #142b4b; }
 .story-logo {
   width: 100%;
   mask-image: url('/brand/logo-background-mask.png');
@@ -413,4 +414,31 @@
   .story-edition-grid { grid-template-columns: 1fr; }
   .story-logo { max-width: 460px; }
   .home-v2 .faq-edition { grid-template-columns: 1fr; }
+}
+/* Three independent camera layers keep scroll, idle and pointer motion smooth. */
+.hero-lens { position:absolute; inset:0; transform-origin:69% 57%; pointer-events:none; }
+.home-v2 .hero-title-line { overflow:hidden; padding-block:.08em .16em; margin-block:-.08em -.16em; }
+.hero-title-reveal { display:block; }
+.hero-motion-toggle { position:absolute; z-index:3; left:6%; bottom:28px; display:inline-flex; gap:8px; align-items:center; min-height:36px; padding:5px 0; background:transparent; color:#fff3df; font-size:10px; opacity:.8; transition:opacity .2s; }
+.hero-motion-toggle:hover { opacity:1; }
+@media(max-width:630px) {
+ .hero-motion-toggle { bottom:8px; left:21px; font-size:9px; }
+ .home-v2 .hero-title-line { padding-bottom:.18em; margin-bottom:-.18em; }
+}
+@media(prefers-reduced-motion:reduce) { .hero-motion-toggle { display:none; } }
+
+/* Keep the studio content readable throughout scroll; no text travel on mobile. */
+.home-v2 .why-edition li::before { content: none; }
+.home-v2 .why-edition li { padding: 28px 0; }
+.home-v2 .why-edition li h3 { font-size: clamp(20px, 1.8vw, 26px); }
+.home-v2 .story-edition-copy h2 { letter-spacing: -.035em; }
+@media (max-width: 850px) {
+ .home-v2 .story-packaging { grid-template-columns: 1fr 1fr; gap: 10px; }
+ .home-v2 .story-box { width: 100%; }
+ .home-v2 .story-box-navy { margin-bottom: 25px; }
+ .home-v2 .story-box-berry { margin-top: 25px; }
+ .home-v2 .story-packaging-caption { grid-column: 1 / -1; }
+ .home-v2 .why-edition .why-age { font-size: 32px; margin-top: 24px; }
+ .home-v2 .why-edition .why-age small { display: inline; margin-left: 10px; }
+ .home-v2 .final-edition h2 { transform: none; }
 }

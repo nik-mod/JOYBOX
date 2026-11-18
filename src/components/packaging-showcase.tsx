@@ -50,6 +50,7 @@ export function PackagingShowcase({ products }: { products: Product[] }) {
     const media = gsap.matchMedia(section);
 
     media.add(showcaseMotion, context => {
+      if ((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData) return;
       const abort = new AbortController();
       let studio: Awaited<ReturnType<typeof import('./orbital-scene')['mountOrbitalScene']>> | undefined;
       let timeline: gsap.core.Timeline | undefined;
@@ -57,6 +58,19 @@ export function PackagingShowcase({ products }: { products: Product[] }) {
       const buttons = Array.from(stage.querySelectorAll<HTMLButtonElement>('.orbital-variants button'));
       let sectionRefresh = 0;
       let active = -1;
+      const inspection = { x: 0, y: 0 };
+      const inspect = () => studio?.inspect(inspection.x, inspection.y);
+      const inspectX = gsap.quickTo(inspection, 'x', { duration: .7, ease: 'power3.out', onUpdate: inspect });
+      const inspectY = gsap.quickTo(inspection, 'y', { duration: .7, ease: 'power3.out', onUpdate: inspect });
+      const look = (event: PointerEvent) => {
+        if (!triggerRef.current?.isActive) return;
+        const bounds = canvasHost.getBoundingClientRect();
+        inspectX((event.clientX - bounds.left) / bounds.width - .5);
+        inspectY((event.clientY - bounds.top) / bounds.height - .5);
+      };
+      const resetView = () => { inspectX(0); inspectY(0); };
+      canvasHost.addEventListener('pointermove', look);
+      canvasHost.addEventListener('pointerleave', resetView);
 
       const setEdition = (index: number) => {
         if (index === active) return;
@@ -69,6 +83,9 @@ export function PackagingShowcase({ products }: { products: Product[] }) {
       };
 
       function release() {
+        canvasHost!.removeEventListener('pointermove', look);
+        canvasHost!.removeEventListener('pointerleave', resetView);
+        inspectX.tween.kill(); inspectY.tween.kill();
         abort.abort();
         if (sectionRefresh) cancelAnimationFrame(sectionRefresh);
         triggerRef.current?.kill();
@@ -137,7 +154,7 @@ export function PackagingShowcase({ products }: { products: Product[] }) {
           start: 'top top',
           end: () => '+=' + gsap.utils.clamp(1240, 1760, window.innerHeight * 1.85),
           pin: true,
-          scrub: .42,
+          scrub: .6,
           anticipatePin: 1,
           refreshPriority: -1,
         });
@@ -159,7 +176,7 @@ export function PackagingShowcase({ products }: { products: Product[] }) {
         } catch {
           if (!abort.signal.aborted) release();
         }
-      }, { rootMargin: '1700px 0px' });
+      }, { rootMargin: '400px 0px' });
 
       observer.observe(section);
       return () => {

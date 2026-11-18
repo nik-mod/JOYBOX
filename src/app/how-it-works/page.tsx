@@ -1,6 +1,4 @@
 import { storefrontMetadata } from '@/lib/metadata';
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-import { HowSteps } from '@/components/how-steps';
-export const metadata = storefrontMetadata('/how-it-works', 'როგორ მუშაობს?', 'გაიგე როგორ შეარჩიო, შეუკვეთო და გახსნა ჯოიბოქსის სიურპრიზის ყუთი.');
-export default function HowPage() { return <main className="page-shell container" id="main"><div className="page-header"><span className="eyebrow">სამი ნაბიჯი სიხარულამდე</span><h1>როგორ მუშაობს ჯოიბოქსი?</h1><p>შენ ირჩევ ყუთს. სიურპრიზი შიგნით გელოდება. გაიცანი ჯოიბოქსის შეკვეთისა და აღმოჩენის გზა.</p></div><HowSteps /><div className="prose" style={{ marginTop: 55 }}><h2>სიურპრიზი — გააზრებული არჩევანით</h2><p>ყუთის ზუსტი შიგთავსი საიდუმლოდ რჩება, მაგრამ არჩევანისთვის აუცილებელი ინფორმაცია ყოველთვის წინასწარ უნდა იცოდე. თითოეული ყუთის გვერდზე გამოჩნდება ასაკობრივი რეკომენდაცია, შესაძლო კატეგორიები, უსაფრთხოების მითითებები და ფასი.</p><h2>შეკვეთა ანგარიშის შექმნის გარეშე</h2><p>კოლექციის გაშვების შემდეგ შეძლებ ყუთის არჩევას, კალათაში დამატებას და მიწოდების ინფორმაციის მითითებას. ბარათით გადახდა განხორციელდება გადახდის პროვაიდერის დაცულ გვერდზე.</p><div className="notice">პირველი კოლექცია მზადდება. შეკვეთების მიღების დაწყებამდე გამოქვეყნდება ყუთების დეტალები, ფასები და მიწოდების პირობები.</div><Link className="button button-yellow" href="/shop">ყუთების დათვალიერება <ArrowRight size={18} /></Link></div></main>; }
+import { HowJourney } from '@/components/how-journey';
+export const metadata = storefrontMetadata('/how-it-works', 'როგორ მუშაობს?', 'აირჩიე ყუთი, მიიღე სახლში და გახსენი სიურპრიზი — გაიცანი ჯოიბოქსის აღმოჩენის გზა.');
+export default function HowPage() { return <HowJourney />; }

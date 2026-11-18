@@ -2,13 +2,13 @@ import type { Packaging } from './types';
 
 export const packagingDesigns = {
   'navy-yellow': {
-    title: 'ლურჯი ყუთი',
+    title: 'ყუთი ბიჭებისთვის',
     label: 'მუქი ლურჯი და ყვითელი',
     image: '/brand/box-navy.webp',
     compact: '/brand/box-navy-compact.webp',
   },
   'pink-berry': {
-    title: 'ვარდისფერი ყუთი',
+    title: 'ყუთი გოგონებისთვის',
     label: 'ვარდისფერი და კენკრისფერი',
     image: '/brand/box-berry.webp',
     compact: '/brand/box-berry-compact.webp',

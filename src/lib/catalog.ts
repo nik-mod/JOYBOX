@@ -4,17 +4,18 @@ import { createHash } from 'node:crypto';
 import { createOrderClient, createPublicClient } from './supabase';
 import { paymentsAvailable } from './config';
 import type { Product, StoreSettings, PublicOrder } from './types';
+import { launchProducts } from './launch-products';
 
 export const getProducts = cache(async (): Promise<Product[]> => {
   const client = createPublicClient();
-  if (!client) return [];
+  if (!client) return launchProducts;
   const { data, error } = await client.from('products').select('*').eq('published', true).order('sort_order');
   if (error) throw new Error('პროდუქტების ჩატვირთვა ვერ მოხერხდა. სცადეთ ხელახლა.');
   return (data ?? []) as Product[];
 });
 export const getProduct = cache(async (slug: string): Promise<Product | null> => {
   const client = createPublicClient();
-  if (!client) return null;
+  if (!client) return launchProducts.find(product => product.slug === slug) ?? null;
   const {data,error} = await client.from('products').select('*').eq('published', true).eq('slug', slug).maybeSingle();
   if (error) throw new Error('პროდუქტის ჩატვირთვა ვერ მოხერხდა.');
   return data as Product | null;

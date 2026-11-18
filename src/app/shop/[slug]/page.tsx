@@ -47,19 +47,25 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       <div className="product-detail">
         <ProductGallery product={product} />
         <div className="product-copy">
-          <h1>{product.name}</h1>
+          <h1>{product.name.replace(/^ჯოიბოქსი\s*—\s*/, '')}</h1>
           <div className="product-edition-price">
             <span className="detail-price">{formatMoney(product.price_minor)}</span>
             <span>{product.stock > 0 ? 'მარაგშია' : 'ამოწურულია'}</span>
           </div>
-          <p>{product.description}</p>
+          <p>{product.short_description}</p>
+          <dl className="product-essential-facts">
+            {product.age_label && <div><dt>რეკომენდებული ასაკი</dt><dd>{product.age_label}</dd></div>}
+            {product.dimensions && <div><dt>ყუთის ზომა</dt><dd>{product.dimensions}</dd></div>}
+          </dl>
           <ProductPurchase product={product} />
           <div className="product-facts">
             {product.packaging && <p><strong>შეფუთვის ფერი:</strong> <PackagingLabel packaging={product.packaging} /></p>}
-            {product.age_label && <p><strong>რეკომენდებული ასაკი:</strong> {product.age_label}</p>}
-            {product.categories.length > 0 && <p><strong>შესაძლო კატეგორიები:</strong> {product.categories.join(', ')}</p>}
-            {product.dimensions && <p><strong>ზომები:</strong> {product.dimensions}</p>}
-            {product.safety_info && <p><strong>უსაფრთხოება:</strong> {product.safety_info}</p>}
+            {product.safety_info && <p>თამაშამდე შეამოწმე თითოეული ნივთის ასაკობრივი ნიშნული და უსაფრთხოების მითითებები.</p>}
+          </div>
+          <div className="faq-list product-disclosures">
+            <details><summary>რა დაგხვდება ყუთში?</summary><div className="disclosure-body"><p>{product.description}</p>
+              {product.categories.length > 0 && <p><strong>შესაძლო კატეგორიები:</strong> {product.categories.join(', ')}</p>}</div></details>
+            {product.safety_info && <details><summary>უსაფრთხოება და გამოყენება</summary><div className="disclosure-body"><p>{product.safety_info}</p></div></details>}
           </div>
           <nav className="product-policy-links" aria-label="შეკვეთის პირობები">
             <Link className="text-link" href="/delivery">მიწოდების პირობები</Link>

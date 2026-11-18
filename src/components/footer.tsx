@@ -6,7 +6,7 @@ export function Footer() {
   return (
     <FooterMotion>
       <div className="footer-edition container">
-        <div className="footer-brand"><Brand large /></div>
+        <div className="footer-brand"><Brand large /><p>პატარა ყუთი. დიდი სიხარული.</p></div>
         <nav className="footer-links" aria-label="ჯოიბოქსის შესახებ">
           <h3>აღმოაჩინე</h3>
           <Link href="/shop">ჩვენი ყუთები</Link>

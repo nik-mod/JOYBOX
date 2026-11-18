@@ -17,3 +17,5 @@ One GSAP timeline masks each outgoing step before uncovering the next and update
 Production browser checks passed in Chromium, Firefox and Playwright WebKit. At 1440×900 the stage pinned for 927px. The closed box, turn, lid lift and fully open frame appeared at approximately 1.0s, 2.63s, 3.7s and 5.46s. Reverse scrolling returned to the turn. The checks also covered rapid scroll changes, holding the selected frame, resizing, keyboard navigation, browser Back, reduced motion and HTTP byte-range serving. Chromium checks verified the image fallback after a failed video request and the unpinned handoff after a delayed request. Touch widths of 360px, 390px and 768px made zero video requests. Physical iOS Safari and deployed media serving remain unverified.
 
 The production build, TypeScript check and all 13 automated tests passed.
+
+The dedicated /how-it-works route now uses the newer two-box owner video. See HOW-IT-WORKS-CINEMA.md for that independent sequence, encodes and verification. The homepage film described above remains unchanged.

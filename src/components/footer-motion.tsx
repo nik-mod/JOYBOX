@@ -1,10 +1,12 @@
 'use client';
 
 import { useRef, type ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
 import { allowMotion, editorialEase, gsap, useGSAP } from './motion';
 
 export function FooterMotion({ children }: { children: ReactNode }) {
   const footer = useRef<HTMLElement>(null);
+  const pathname = usePathname();
 
   useGSAP(() => {
     const element = footer.current;
@@ -18,7 +20,7 @@ export function FooterMotion({ children }: { children: ReactNode }) {
       });
     });
     return () => media.revert();
-  }, { scope: footer });
+  }, { scope: footer, dependencies: [pathname], revertOnUpdate: true });
 
   return <footer className="site-footer" ref={footer}>{children}</footer>;
 }

@@ -1,0 +1,602 @@
+[
+  {
+    "path": "/",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "პატარა ყუთი, დიდი სიხარული",
+    "overflow": false,
+    "heading": "პატარა ყუთი. დიდი სიხარული.",
+    "vitals": {
+      "cls": 0,
+      "lcp": 136
+    },
+    "resourceKB": 691,
+    "badImages": []
+  },
+  {
+    "path": "/shop",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "სიურპრიზის ყუთები | JOYBOX",
+    "overflow": false,
+    "heading": "რომელ სიურპრიზს აირჩევ?",
+    "vitals": {
+      "cls": 0,
+      "lcp": 140
+    },
+    "resourceKB": 197,
+    "badImages": []
+  },
+  {
+    "path": "/about",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "ჩვენ შესახებ | JOYBOX",
+    "overflow": false,
+    "heading": "პატარა ყუთი.დიდი სიხარული.",
+    "vitals": {
+      "cls": 0,
+      "lcp": 40
+    },
+    "resourceKB": 44,
+    "badImages": []
+  },
+  {
+    "path": "/faq",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "ხშირად დასმული კითხვები | JOYBOX",
+    "overflow": false,
+    "heading": "რაც გაინტერესებს.",
+    "vitals": {
+      "cls": 0,
+      "lcp": 28
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/contact",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "კონტაქტი | JOYBOX",
+    "overflow": false,
+    "heading": "დაგვიკავშირდი",
+    "vitals": {
+      "cls": 0,
+      "lcp": 40
+    },
+    "resourceKB": 44,
+    "badImages": []
+  },
+  {
+    "path": "/delivery",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "მიწოდების პირობები | JOYBOX",
+    "overflow": false,
+    "heading": "მიწოდება",
+    "vitals": {
+      "cls": 0,
+      "lcp": 32
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/returns",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "დაბრუნების პირობები | JOYBOX",
+    "overflow": false,
+    "heading": "დაბრუნება და თანხის ანაზღაურება",
+    "vitals": {
+      "cls": 0,
+      "lcp": 28
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/privacy",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "კონფიდენციალურობა | JOYBOX",
+    "overflow": false,
+    "heading": "კონფიდენციალურობის პოლიტიკა",
+    "vitals": {
+      "cls": 0,
+      "lcp": 32
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/terms",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "წესები და პირობები | JOYBOX",
+    "overflow": false,
+    "heading": "წესები და პირობები",
+    "vitals": {
+      "cls": 0,
+      "lcp": 28
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/cart",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "ჩემი კალათა | JOYBOX",
+    "overflow": false,
+    "heading": "ჩემი კალათა",
+    "vitals": {
+      "cls": 0.03787701076931423,
+      "lcp": 48
+    },
+    "resourceKB": 123,
+    "badImages": []
+  },
+  {
+    "path": "/checkout",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "შეკვეთის გაფორმება | JOYBOX",
+    "overflow": false,
+    "heading": "შეკვეთის გაფორმება",
+    "vitals": {
+      "cls": 0.04203452781394675,
+      "lcp": 48
+    },
+    "resourceKB": 46,
+    "badImages": []
+  },
+  {
+    "path": "/how-it-works",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "როგორ მუშაობს? | JOYBOX",
+    "overflow": false,
+    "heading": "როგორ მუშაობსჯოიბოქსი?",
+    "vitals": {
+      "cls": 0,
+      "lcp": 36
+    },
+    "resourceKB": 57,
+    "badImages": []
+  },
+  {
+    "path": "/shop/joybox-navy",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "ჯოიბოქსი — ყუთი ბიჭებისთვის | JOYBOX",
+    "overflow": false,
+    "heading": "ყუთი ბიჭებისთვის",
+    "vitals": {
+      "cls": 0,
+      "lcp": 60
+    },
+    "resourceKB": 46,
+    "badImages": []
+  },
+  {
+    "path": "/shop/joybox-berry",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "ჯოიბოქსი — ყუთი გოგონებისთვის | JOYBOX",
+    "overflow": false,
+    "heading": "ყუთი გოგონებისთვის",
+    "vitals": {
+      "cls": 0,
+      "lcp": 48
+    },
+    "resourceKB": 44,
+    "badImages": []
+  },
+  {
+    "path": "/order/invalid",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "შეკვეთის სტატუსი | JOYBOX",
+    "overflow": false,
+    "heading": "შეკვეთა ვერ მოიძებნა",
+    "vitals": {
+      "cls": 0,
+      "lcp": 32
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/missing-page",
+    "width": 1440,
+    "status": 404,
+    "errors": [],
+    "title": "ჯოიბოქსი — პატარა ყუთი, დიდი სიხარული",
+    "overflow": false,
+    "heading": "ეს გვერდი ვერ მოიძებნა",
+    "vitals": {
+      "cls": 0,
+      "lcp": 48
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/admin/login",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "JOYBOX — ადმინისტრირება | JOYBOX",
+    "overflow": false,
+    "heading": "მაღაზიის მართვა",
+    "vitals": {
+      "cls": 0,
+      "lcp": 104
+    },
+    "resourceKB": 46,
+    "badImages": []
+  },
+  {
+    "path": "/admin/products",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "JOYBOX — ადმინისტრირება | JOYBOX",
+    "overflow": false,
+    "heading": "მაღაზიის მართვა",
+    "vitals": {
+      "cls": 0,
+      "lcp": 56
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/admin/orders",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "JOYBOX — ადმინისტრირება | JOYBOX",
+    "overflow": false,
+    "heading": "მაღაზიის მართვა",
+    "vitals": {
+      "cls": 0,
+      "lcp": 60
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/admin/settings",
+    "width": 1440,
+    "status": 200,
+    "errors": [],
+    "title": "JOYBOX — ადმინისტრირება | JOYBOX",
+    "overflow": false,
+    "heading": "მაღაზიის მართვა",
+    "vitals": {
+      "cls": 0,
+      "lcp": 44
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "პატარა ყუთი, დიდი სიხარული",
+    "overflow": false,
+    "heading": "პატარა ყუთი. დიდი სიხარული.",
+    "vitals": {
+      "cls": 0,
+      "lcp": 52
+    },
+    "resourceKB": 588,
+    "badImages": []
+  },
+  {
+    "path": "/shop",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "სიურპრიზის ყუთები | JOYBOX",
+    "overflow": false,
+    "heading": "რომელ სიურპრიზს აირჩევ?",
+    "vitals": {
+      "cls": 0,
+      "lcp": 40
+    },
+    "resourceKB": 139,
+    "badImages": []
+  },
+  {
+    "path": "/about",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "ჩვენ შესახებ | JOYBOX",
+    "overflow": false,
+    "heading": "პატარა ყუთი.დიდი სიხარული.",
+    "vitals": {
+      "cls": 0,
+      "lcp": 36
+    },
+    "resourceKB": 185,
+    "badImages": []
+  },
+  {
+    "path": "/faq",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "ხშირად დასმული კითხვები | JOYBOX",
+    "overflow": false,
+    "heading": "რაც გაინტერესებს.",
+    "vitals": {
+      "cls": 0,
+      "lcp": 28
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/contact",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "კონტაქტი | JOYBOX",
+    "overflow": false,
+    "heading": "დაგვიკავშირდი",
+    "vitals": {
+      "cls": 0,
+      "lcp": 32
+    },
+    "resourceKB": 44,
+    "badImages": []
+  },
+  {
+    "path": "/delivery",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "მიწოდების პირობები | JOYBOX",
+    "overflow": false,
+    "heading": "მიწოდება",
+    "vitals": {
+      "cls": 0,
+      "lcp": 28
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/returns",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "დაბრუნების პირობები | JOYBOX",
+    "overflow": false,
+    "heading": "დაბრუნება და თანხის ანაზღაურება",
+    "vitals": {
+      "cls": 0,
+      "lcp": 28
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/privacy",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "კონფიდენციალურობა | JOYBOX",
+    "overflow": false,
+    "heading": "კონფიდენციალურობის პოლიტიკა",
+    "vitals": {
+      "cls": 0,
+      "lcp": 28
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/terms",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "წესები და პირობები | JOYBOX",
+    "overflow": false,
+    "heading": "წესები და პირობები",
+    "vitals": {
+      "cls": 0,
+      "lcp": 24
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/cart",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "ჩემი კალათა | JOYBOX",
+    "overflow": false,
+    "heading": "ჩემი კალათა",
+    "vitals": {
+      "cls": 0.06693275908119657,
+      "lcp": 28
+    },
+    "resourceKB": 47,
+    "badImages": []
+  },
+  {
+    "path": "/checkout",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "შეკვეთის გაფორმება | JOYBOX",
+    "overflow": false,
+    "heading": "შეკვეთის გაფორმება",
+    "vitals": {
+      "cls": 0.04032835870726496,
+      "lcp": 28
+    },
+    "resourceKB": 46,
+    "badImages": []
+  },
+  {
+    "path": "/how-it-works",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "როგორ მუშაობს? | JOYBOX",
+    "overflow": false,
+    "heading": "როგორ მუშაობსჯოიბოქსი?",
+    "vitals": {
+      "cls": 0,
+      "lcp": 44
+    },
+    "resourceKB": 47,
+    "badImages": []
+  },
+  {
+    "path": "/shop/joybox-navy",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "ჯოიბოქსი — ყუთი ბიჭებისთვის | JOYBOX",
+    "overflow": false,
+    "heading": "ყუთი ბიჭებისთვის",
+    "vitals": {
+      "cls": 0,
+      "lcp": 32
+    },
+    "resourceKB": 47,
+    "badImages": []
+  },
+  {
+    "path": "/shop/joybox-berry",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "ჯოიბოქსი — ყუთი გოგონებისთვის | JOYBOX",
+    "overflow": false,
+    "heading": "ყუთი გოგონებისთვის",
+    "vitals": {
+      "cls": 0,
+      "lcp": 32
+    },
+    "resourceKB": 44,
+    "badImages": []
+  },
+  {
+    "path": "/order/invalid",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "შეკვეთის სტატუსი | JOYBOX",
+    "overflow": false,
+    "heading": "შეკვეთა ვერ მოიძებნა",
+    "vitals": {
+      "cls": 0,
+      "lcp": 36
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/missing-page",
+    "width": 390,
+    "status": 404,
+    "errors": [],
+    "title": "ჯოიბოქსი — პატარა ყუთი, დიდი სიხარული",
+    "overflow": false,
+    "heading": "ეს გვერდი ვერ მოიძებნა",
+    "vitals": {
+      "cls": 0,
+      "lcp": 28
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/admin/login",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "JOYBOX — ადმინისტრირება | JOYBOX",
+    "overflow": false,
+    "heading": "მაღაზიის მართვა",
+    "vitals": {
+      "cls": 0,
+      "lcp": 28
+    },
+    "resourceKB": 46,
+    "badImages": []
+  },
+  {
+    "path": "/admin/products",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "JOYBOX — ადმინისტრირება | JOYBOX",
+    "overflow": false,
+    "heading": "მაღაზიის მართვა",
+    "vitals": {
+      "cls": 0,
+      "lcp": 32
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/admin/orders",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "JOYBOX — ადმინისტრირება | JOYBOX",
+    "overflow": false,
+    "heading": "მაღაზიის მართვა",
+    "vitals": {
+      "cls": 0,
+      "lcp": 32
+    },
+    "resourceKB": 43,
+    "badImages": []
+  },
+  {
+    "path": "/admin/settings",
+    "width": 390,
+    "status": 200,
+    "errors": [],
+    "title": "JOYBOX — ადმინისტრირება | JOYBOX",
+    "overflow": false,
+    "heading": "მაღაზიის მართვა",
+    "vitals": {
+      "cls": 0,
+      "lcp": 32
+    },
+    "resourceKB": 43,
+    "badImages": []
+  }
+]

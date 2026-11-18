@@ -51,7 +51,7 @@ function PackagingPreview({ color }: { color: Packaging }) {
   return (
     <section className="shop-preview" aria-labelledby="preview-title">
       <div className="shop-preview-controls">
-        <span id="shop-preview-filter" className="shop-control-label"><SlidersHorizontal size={16} aria-hidden="true" /> შეფუთვის ფერი</span>
+        <span id="shop-preview-filter" className="shop-control-label"><SlidersHorizontal size={16} aria-hidden="true" /> აირჩიე ყუთი</span>
         <div className="shop-color-picker" role="group" aria-labelledby="shop-preview-filter">
           {packagingColors.map(option => (
             <button type="button" key={option} aria-pressed={color === option} onClick={() => updateQuery({ packaging: option })}>
@@ -179,6 +179,13 @@ function Catalog({ products, params }: { products: Product[]; params: Pick<URLSe
 
   return (
     <section className="shop-catalog" aria-label="ყუთების კატალოგი">
+      <div className="shop-quick-filters" role="group" aria-label="აირჩიე ყუთის ტიპი">
+        <button type="button" aria-pressed={!packaging} onClick={() => updateQuery({ packaging: '' })}>ყველა ყუთი <span>{products.length}</span></button>
+        {colors.map(color => <button type="button" key={color} aria-pressed={packaging === color} onClick={() => updateQuery({ packaging: color })}>
+          <Swatch color={color} />{packagingDesigns[color].title.replace('ყუთი ', '')}
+          <span>{products.filter(product => product.packaging === color).length}</span>
+        </button>)}
+      </div>
       <div className="shop-catalog-controls" ref={controls}>
         <form className="shop-search" role="search" onSubmit={event => {
           event.preventDefault();
@@ -192,8 +199,8 @@ function Catalog({ products, params }: { products: Product[]; params: Pick<URLSe
         <ShopMenu name="filters" open={openMenu === 'filters'} label="ფილტრები" indicator={facetCount}
           onToggle={() => setOpenMenu(openMenu === 'filters' ? null : 'filters')}>
           {colors.length > 0 && <fieldset>
-            <legend>შეფუთვის ფერი</legend>
-            <label className="shop-option"><input type="radio" name="shop-color" checked={!packaging} onChange={() => updateQuery({ packaging: '' })} /> ყველა ფერი</label>
+            <legend>ყუთის ტიპი</legend>
+            <label className="shop-option"><input type="radio" name="shop-color" checked={!packaging} onChange={() => updateQuery({ packaging: '' })} /> ყველა ყუთი</label>
             {colors.map(color => <label className="shop-option" key={color}>
               <input type="radio" name="shop-color" checked={color === packaging} onChange={() => updateQuery({ packaging: color })} />
               <Swatch color={color} /> {packagingDesigns[color].title}

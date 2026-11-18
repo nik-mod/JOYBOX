@@ -30,17 +30,22 @@ export function HowFilm() {
     const media = gsap.matchMedia(stage);
 
     media.add(cinema, context => {
+      if ((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData) return;
       let trigger: ScrollTrigger | undefined;
+      let timeline: gsap.core.Timeline | undefined;
       let pendingSeek = 0;
       let target = 0;
       let failed = false;
+      let near = false;
+      let loading = false;
+      let timeout: ReturnType<typeof setTimeout> | undefined;
 
       const seekLatest = () => {
         if (failed || video.seeking || pendingSeek) return;
         pendingSeek = requestAnimationFrame(() => {
           pendingSeek = 0;
           if (video.seeking || Math.abs(video.currentTime - target) < 1 / (frameRate * 2)) return;
-          video.currentTime = target;
+          try { video.currentTime = target; } catch { onError(); }
         });
       };
 
@@ -48,12 +53,12 @@ export function HowFilm() {
         const rows = Array.from(stage.querySelectorAll('.how-film-step'));
         const lastFrame = Math.max(0, Math.round(video.duration * frameRate) - 1);
         const playhead = { frame: 0 };
-        const timeline = gsap.timeline({
+        timeline = gsap.timeline({
           paused: true,
           defaults: { ease: 'none' },
           onUpdate() {
             target = Math.min(lastFrame, Math.round(playhead.frame)) / frameRate;
-            const progress = timeline.progress();
+            const progress = this.progress();
             const beat = progress >= stepCuts[1] ? '3' : progress >= stepCuts[0] ? '2' : '1';
             if (stage.dataset.beat !== beat) stage.dataset.beat = beat;
             seekLatest();
@@ -83,7 +88,7 @@ export function HowFilm() {
           start: canPin ? 'top top' : 'top top+=24',
           end: canPin ? () => '+=' + gsap.utils.clamp(700, 1100, window.innerHeight * 1.03) : 'center 12%',
           pin: canPin,
-          scrub: .24,
+          scrub: .4,
           anticipatePin: canPin ? 1 : 0,
         });
       });
@@ -91,6 +96,7 @@ export function HowFilm() {
       const ready = () => {
         if (failed || trigger || !Number.isFinite(video.duration) || video.duration < 1) return;
         if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
+        clearTimeout(timeout);
         stage.dataset.frame = 'ready';
         install();
       };
@@ -98,24 +104,43 @@ export function HowFilm() {
         failed = true;
         stage.dataset.frame = 'error';
         if (pendingSeek) cancelAnimationFrame(pendingSeek);
-        // Keep existing pin geometry until cleanup if the connection fails during a seek.
+        clearTimeout(timeout);
+        const anchored = trigger?.isActive;
+        const before = stage.getBoundingClientRect().top;
+        trigger?.kill(); timeline?.revert();
+        delete stage.dataset.scrub;
+        delete stage.dataset.beat;
+        ScrollTrigger.refresh();
+        if (anchored) window.scrollBy({ top: stage.getBoundingClientRect().top - before, behavior: 'instant' });
       };
-      const observer = new IntersectionObserver(entries => {
-        if (!entries.some(entry => entry.isIntersecting)) return;
+      const load = () => {
+        if (!near || loading || failed || window.scrollY < 48) return;
+        loading = true;
         observer.disconnect();
+        window.removeEventListener('scroll', load);
+        video.preload = 'auto';
         video.src = '/brand/joybox-unboxing.mp4';
         video.load();
-      }, { rootMargin: '1050px 0px' });
+        timeout = setTimeout(() => { if (!trigger) onError(); }, 15000);
+      };
+      const observer = new IntersectionObserver(entries => {
+        near = entries.some(entry => entry.isIntersecting);
+        load();
+      }, { rootMargin: '650px 0px' });
 
       video.addEventListener('loadeddata', ready);
       video.addEventListener('seeked', seekLatest);
       video.addEventListener('error', onError);
+      window.addEventListener('scroll', load, { passive: true });
       observer.observe(stage);
 
       return () => {
         observer.disconnect();
+        window.removeEventListener('scroll', load);
+        clearTimeout(timeout);
         if (pendingSeek) cancelAnimationFrame(pendingSeek);
         trigger?.kill();
+        timeline?.revert();
         video.removeEventListener('loadeddata', ready);
         video.removeEventListener('seeked', seekLatest);
         video.removeEventListener('error', onError);
@@ -140,7 +165,7 @@ export function HowFilm() {
               <img src="/brand/joybox-unboxing-start.webp" width={1280} height={720} loading="lazy"
                 alt="ლურჯ-ყვითელი ჯოიბოქსის ყუთი კრემისფერ ფონზე" />
             </picture>
-            <video ref={videoRef} muted playsInline preload="auto" aria-hidden="true" />
+            <video ref={videoRef} muted playsInline preload="none" aria-hidden="true" />
           </div>
           <figcaption className="how-film-caption">ბრენდის კონცეპტუალური ვიზუალი</figcaption>
         </figure>

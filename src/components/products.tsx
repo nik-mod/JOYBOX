@@ -7,9 +7,11 @@ import { formatMoney } from '@/lib/money';
 import { packagingDesigns } from '@/lib/packaging';
 import { useCart } from './cart-context';
 import { BoxMark } from './brand';
+import { PackagingPhoto } from './packaging-photo';
 import { allowMotion, editorialEase, gsap, ScrollTrigger, useGSAP, wideMotion } from './motion';
 
 export function ProductGrid({ products }: { products: Product[] }) {
+  const { add, lines } = useCart();
   const grid = useRef<HTMLDivElement>(null);
   const listing = products.map(({ id }) => id).join(',');
 
@@ -37,8 +39,8 @@ export function ProductGrid({ products }: { products: Product[] }) {
       // Keep the scroll work bounded when the shop contains a large catalog.
       const images = Array.from(element.querySelectorAll('.product-image-media')).slice(0, 6);
       for (const image of images) {
-        gsap.fromTo(image, { yPercent: -3.5 }, {
-          yPercent: 3.5, ease: 'none',
+        gsap.fromTo(image, { yPercent: -1 }, {
+          yPercent: 1, ease: 'none',
           scrollTrigger: { trigger: image.parentElement, start: 'top bottom', end: 'bottom top', scrub: .35 },
         });
       }
@@ -53,7 +55,9 @@ export function ProductGrid({ products }: { products: Product[] }) {
           <Link href={`/shop/${product.slug}`} className="product-image">
             {product.image_url ? (
               <span className="product-image-media">
-                <img src={product.image_url} alt={product.name} width="500" height="500" loading="lazy" />
+                {product.packaging && product.image_url === packagingDesigns[product.packaging].image
+                  ? <PackagingPhoto color={product.packaging} />
+                  : <img src={product.image_url} alt={product.name} width="600" height="400" loading="lazy" decoding="async" />}
               </span>
             ) : <BoxMark />}
           </Link>
@@ -64,6 +68,11 @@ export function ProductGrid({ products }: { products: Product[] }) {
           </div>
           <p>{product.short_description}</p>
           <PackagingLabel packaging={product.packaging} />
+          <button type="button" className="button button-yellow" disabled={product.stock < 1 || lines.some(line => line.product.id === product.id && line.quantity >= product.stock)}
+            onClick={() => add(product)}>
+            {product.stock < 1 ? 'ამოწურულია' : lines.some(line => line.product.id === product.id) ? 'კალათაშია' : 'კალათაში დამატება'}
+            {lines.some(line => line.product.id === product.id) ? <Check size={17} aria-hidden="true" /> : <Plus size={17} aria-hidden="true" />}
+          </button>
           <Link className="button button-outline" href={`/shop/${product.slug}`}>
             {product.stock > 0 ? 'გაიცანი ყუთი' : 'დროებით ამოწურულია'} <ArrowRight size={17} />
           </Link>
@@ -80,8 +89,11 @@ export function PackagingLabel({ packaging }: { packaging: Product['packaging'] 
 }
 
 export function ProductPurchase({ product }: { product: Product }) {
-  const { add } = useCart(); const [quantity, setQuantity] = useState(1); const [added, setAdded] = useState(false);
-  return <><div className="purchase-row"><div className="quantity-control"><button aria-label="რაოდენობის შემცირება" disabled={quantity <= 1} onClick={() => setQuantity(q => q - 1)}><Minus size={15} /></button><span aria-live="polite">{quantity}</span><button aria-label="რაოდენობის გაზრდა" disabled={quantity >= product.stock || quantity >= 99} onClick={() => setQuantity(q => q + 1)}><Plus size={15} /></button></div><button className="button button-yellow" disabled={product.stock < 1} onClick={() => { add(product, quantity); setAdded(true); }}>{product.stock < 1 ? 'ამოწურულია' : added ? 'დამატებულია' : 'კალათაში დამატება'}{added ? <Check size={19} /> : <Plus size={19} />}</button></div>{added && <Link className="text-link" style={{ marginTop: 15 }} href="/cart">კალათის ნახვა <ArrowRight size={17} /></Link>}</>;
+  const { add, lines } = useCart(); const [quantity, setQuantity] = useState(1);
+  const inCart = lines.find(line => line.product.id === product.id)?.quantity ?? 0;
+  const remaining = Math.max(0, Math.min(product.stock, 99) - inCart);
+  const selected = Math.min(quantity, remaining || 1);
+  return <div className="product-purchase"><div className="purchase-row"><div className="quantity-control"><button type="button" aria-label="რაოდენობის შემცირება" disabled={selected <= 1 || !remaining} onClick={() => setQuantity(selected - 1)}><Minus size={15} /></button><span aria-live="polite">{selected}</span><button type="button" aria-label="რაოდენობის გაზრდა" disabled={selected >= remaining} onClick={() => setQuantity(selected + 1)}><Plus size={15} /></button></div><button type="button" className="button button-yellow" disabled={!remaining} onClick={() => add(product, selected)}>{product.stock < 1 ? 'ამოწურულია' : inCart && !remaining ? 'კალათაშია' : 'კალათაში დამატება'}{inCart ? <Check size={19} /> : <Plus size={19} />}</button></div><div className="purchase-feedback" aria-live="polite">{inCart > 0 && <Link className="text-link" href="/cart">კალათის ნახვა <ArrowRight size={17} /></Link>}</div></div>;
 }
 export function ProductGallery({ product }: { product: Product }) {
   const images = Array.from(new Set([product.image_url, ...product.images].filter(Boolean)));
@@ -89,7 +101,9 @@ export function ProductGallery({ product }: { product: Product }) {
   return (
     <div className="product-gallery">
       <div className="main-product-image">
-        {selected ? <img key={selected} src={selected} alt={product.name} width="700" height="700" />
+        {selected ? product.packaging && selected === packagingDesigns[product.packaging].image
+          ? <PackagingPhoto color={product.packaging} loading="eager" />
+          : <img key={selected} src={selected} alt={product.name} width="900" height="600" />
           : <Package size={90} />}
       </div>
       {images.length > 1 && (

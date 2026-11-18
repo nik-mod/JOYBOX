@@ -24,3 +24,5 @@ https://huggingface.co/datasets/codepawl/scanned-objects-glb
 CC0 1.0 — https://creativecommons.org/publicdomain/zero/1.0/
 
 The carton geometry, puzzle cube, rocket, bracelets, and paint set were made for JOYBOX. The toys shown are conceptual illustrations.
+
+Quality revision: teddy-scan.glb (Lovable Huggable Cuddly Boutique Teddy Bear Beige) and unicorn-hq.glb use the dataset engine GLBs with 2048px textures and original packed geometry. Teddy orientation adjusted for presentation. Source: https://huggingface.co/datasets/codepawl/scanned-objects-glb . Google Research, CC BY 4.0. The doll and ladybug are no longer displayed.

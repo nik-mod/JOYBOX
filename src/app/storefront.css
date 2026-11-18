@@ -118,3 +118,65 @@
   .commerce-flow .empty-state { grid-template-columns: 1fr; }
   .commerce-flow .empty-state > svg { grid-row: auto; justify-self: start; width: 83px; margin: 0 0 14px; }
 }
+/* Shared interaction timing and accessible browser surfaces. */
+:root { --motion-ease: cubic-bezier(.22,1,.36,1); --control-time: 220ms; }
+html { scrollbar-gutter: stable; }
+input, textarea { caret-color: #102d57; }
+input::placeholder, textarea::placeholder { color: #646a71; opacity: 1; }
+button, a, summary { text-underline-offset: .22em; }
+.price, .detail-price, .product-price, .summary-row, .quantity-control { font-variant-numeric: tabular-nums; }
+.button { transition: background-color var(--control-time), color var(--control-time), transform var(--control-time) var(--motion-ease); }
+.button:disabled:hover { transform: none; }
+.button:active:not(:disabled) { transform: translateY(0) scale(.985); }
+.mobile-menu { overflow-y: auto; padding: 20px 7%; }
+.mobile-menu nav a { font-size: clamp(20px,5vw,28px); padding-block: 22px; }
+.mobile-menu nav a[aria-current='page'] { color: var(--yellow); }
+.mobile-menu-help { display: flex; flex-wrap: wrap; gap: 12px 30px; padding-top: 20px; font-size: 14px; }
+.mobile-menu-help a { min-height: 44px; display: flex; align-items: center; }
+.site-footer .footer-brand p { max-width: 26ch; font-size: 14px; color: #d0d7df; margin-top: 12px; }
+.site-footer .footer-links a { min-height: 34px; align-items: center; }
+.site-footer .footer-links a:focus-visible { color: var(--yellow); }
+.site-footer .footer-legal a { display: inline-flex; align-items: center; min-height: 36px; }
+.faq-list summary { line-height: 1.65; }
+.faq-list summary::after { top: 50%; translate: 0 -50%; }
+.faq-list .disclosure-body { padding-bottom: 12px; }
+.faq-list .disclosure-body p { padding-bottom: 14px; margin: 0; }
+.product-edition .product-detail { grid-template-columns: minmax(0,1.15fr) minmax(0,1fr); align-items: start; }
+.product-edition .product-gallery { position: sticky; top: 114px; }
+.product-edition .main-product-image { aspect-ratio: 3 / 2; overflow: hidden; }
+.product-edition .main-product-image picture, .product-edition .main-product-image img { width: 100%; height: 100%; object-fit: contain; }
+.product-edition .product-copy h1 { font-size: clamp(30px,3.3vw,48px); line-height: 1.25; overflow-wrap: normal; }
+.product-edition .detail-price { font-size: clamp(28px,3vw,38px); }
+.product-essential-facts { display: flex; flex-wrap: wrap; gap: 20px 32px; padding: 20px 0; margin: 0; border-block: 1px solid var(--line); }
+.product-essential-facts dt { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.product-essential-facts dd { font-weight: 700; margin: 0; font-size: 15px; }
+.product-edition .product-facts { margin: 0; padding-block: 12px; border-top: 0; font-size: 13px; }
+.product-edition .product-facts > p { line-height: 1.85; }
+.product-purchase .purchase-row { margin-top: 24px; }
+.product-purchase .purchase-row > .button { flex: 1; padding-inline: 16px; }
+.purchase-feedback { min-height: 44px; display: flex; align-items: center; }
+.product-disclosures summary { font-size: 15px; }
+.product-disclosures .disclosure-body p { font-size: 14px; line-height: 1.85; }
+.product-disclosures details { padding-inline: 16px; }
+.product-policy-links { padding-top: 12px; }
+.cart-line-img img { object-fit: contain; }
+.remove-button { min-height: 44px; font-size: 12px; }
+.quantity-control button { transition: background-color .2s; }
+.quantity-control button:hover:not(:disabled) { background: #102d5710; }
+.commerce-flow .cart-total { border-radius: 4px; }
+@media (max-width:850px) {
+ .product-edition .product-detail { grid-template-columns: 1fr; gap: 30px; }
+ .product-edition .product-gallery { position: static; }
+ .product-edition .main-product-image { max-width: 680px; margin-inline: auto; }
+ .site-footer .footer-links a { min-height: 44px; }
+ .site-footer .footer-links { gap: 2px; }
+ .product-purchase .purchase-row { flex-wrap: nowrap; gap: 10px; }
+ .product-purchase .quantity-control button { min-width: 38px; width: 38px; }
+ .product-purchase .quantity-control span { width: 24px; }
+ .product-purchase .button { font-size: 12px; gap: 10px; }
+ .field input, .field select, .field textarea, .faq-search input { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+ .button, .quantity-control button { transition: none; }
+ .button:hover, .button:active { transform: none; }
+}

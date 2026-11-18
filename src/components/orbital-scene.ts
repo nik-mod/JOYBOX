@@ -22,7 +22,7 @@ const pinkLight = new Color('#fff2f3');
 const warmGround = new Color('#cda788');
 const pinkGround = new Color('#d9a5bc');
 
-function makeContactTexture() {
+function makeContactTexture(round = false) {
   const size = 64;
   const rgba = new Uint8Array(size * size * 4);
   for (let y = 0; y < size; y++) {
@@ -32,7 +32,7 @@ function makeContactTexture() {
       const edge = Math.min(1, Math.max(0, (1 - Math.max(u, v)) * 4));
       const offset = (y * size + x) * 4;
       rgba.fill(255, offset, offset + 3);
-      rgba[offset + 3] = Math.round(255 * Math.exp(-3.9 * (u ** 4 + v ** 4)) * edge);
+      rgba[offset + 3] = Math.round(255 * Math.exp(-(round ? 3.1 * (u * u + v * v) : 3.9 * (u ** 4 + v ** 4))) * edge);
     }
   }
   const texture = new DataTexture(rgba, size, size, RGBAFormat);
@@ -100,23 +100,23 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
     const pmrem = new PMREMGenerator(renderer);
     const reflection = pmrem.fromScene(studio, .055, .1, 80, { size: 128 });
     scene.environment = reflection.texture;
-    scene.environmentIntensity = .49;
+    scene.environmentIntensity = .52;
     studio.dispose();
     pmrem.dispose();
     const camera = new PerspectiveCamera(36, 1, .1, 45);
-    const hemisphere = new HemisphereLight('#fff9f1', warmGround, .62);
-    const key = new DirectionalLight(warmLight, 1.24);
+    const hemisphere = new HemisphereLight('#fff9f1', warmGround, .42);
+    const key = new DirectionalLight(warmLight, 1.6);
     key.position.set(-4.6, 6.4, 3.6);
     key.castShadow = true;
-    const shadowSize = software ? 512 : 768;
+    const shadowSize = software ? 1024 : 2048;
     key.shadow.mapSize.set(shadowSize, shadowSize);
     key.shadow.camera.left = key.shadow.camera.bottom = -4.4;
     key.shadow.camera.right = key.shadow.camera.top = 4.4;
     key.shadow.camera.near = .5;
     key.shadow.camera.far = 15;
-    key.shadow.normalBias = .012;
+    key.shadow.normalBias = .006;
     key.shadow.bias = -.0002;
-    key.shadow.radius = 8;
+    key.shadow.radius = software ? 12 : 22;
     const rim = new DirectionalLight('#fff2e7', .34);
     rim.position.set(3.5, 4.4, -4.2);
     scene.add(hemisphere, key, rim);
@@ -129,8 +129,18 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
       return { ...box, toys };
     });
     const contact = makeContactTexture();
+    const toyContact = makeContactTexture(true);
     const contactGeometry = new PlaneGeometry(1, 1);
-    const floor = new Mesh(contactGeometry, new ShadowMaterial({ opacity: .094, depthWrite: false }));
+    const interiorShadows = boxes.map(box => box.toys.map(({ toy, footprint }) => {
+      const shadow = new Mesh(contactGeometry, new MeshBasicMaterial({ map: toyContact, color: '#5c4031',
+        transparent: true, opacity: .18, depthWrite: false, toneMapped: false }));
+      shadow.rotation.x = -Math.PI / 2;
+      shadow.position.set(toy.position.x, .56, toy.position.z);
+      shadow.scale.set(Math.max(.23, footprint[0] * .9), Math.max(.20, footprint[1] * .8), 1);
+      box.root.add(shadow);
+      return shadow;
+    }));
+    const floor = new Mesh(contactGeometry, new ShadowMaterial({ opacity: .035, depthWrite: false }));
     floor.scale.set(11, 11, 1);
     floor.rotation.x = -Math.PI / 2;
     floor.position.y = -.022;
@@ -149,6 +159,7 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
     let request = 0;
     let framing = 1;
     let disposed = false;
+    const inspection = { x: 0, y: 0 };
 
     function render() {
       request = 0;
@@ -158,11 +169,12 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
       const travel = Math.max(0, parallax);
       const extraWidth = Math.max(1, 1.185 / camera.aspect) / framing - 1;
       const dolly = pose.camera + .22 * travel + extraWidth * travel ** .65;
-      camera.position.set(.09 + .26 * parallax, 3.43 * framing * dolly, 7.45 * framing * dolly);
+      camera.position.set(.09 + .26 * parallax + inspection.x * .48,
+        3.43 * framing * dolly + inspection.y * .18, 7.45 * framing * dolly);
       camera.lookAt(.015 - .18 * parallax, .77, 0);
       key.color.copy(warmLight).lerp(pinkLight, pose.blush);
       hemisphere.groundColor.copy(warmGround).lerp(pinkGround, pose.blush);
-      key.intensity = 1.24 - pose.blush * .09;
+      key.intensity = 1.6 - pose.blush * .09;
 
       for (const [index, box] of boxes.entries()) {
         const angle = pose.angle + index * Math.PI;
@@ -171,16 +183,17 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
         const opening = index === 0 ? pose.navyLid : pose.pinkLid;
         box.root.position.set(side * 1.65 - near * .62, 0, near * 1.57 + side * .16);
         box.root.rotation.y = .41 - side * .16 - near * .08 + (pose.camera - 1) * .84 - opening * .12;
-        box.lid.rotation.x = -2.08 * opening;
+        box.lid.rotation.x = -2.18 * opening;
 
         const revealed = index === 0 ? pose.navyToys : pose.pinkToys;
         box.toys.forEach(({ toy, raised, yaw, z }, toyIndex) => {
-          const rise = Math.min(1, Math.max(0, (revealed - toyIndex * .058) / .70));
+          const rise = Math.min(1, Math.max(0, (revealed - toyIndex * .038) / .70));
           const softened = rise * rise * (3 - 2 * rise);
           toy.visible = rise > .002;
-          toy.position.y = -.23 + (raised + .23) * softened;
+          toy.position.y = .16 + (raised - .16) * softened;
           toy.position.z = z - .035 * (1 - softened);
           toy.rotation.y = yaw + .14 * (1 - softened);
+          interiorShadows[index][toyIndex].material.opacity = softened * .18;
         });
 
         const shadow = shadows[index];
@@ -200,8 +213,8 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
     const size = () => {
       const { width, height } = host.getBoundingClientRect();
       if (width < 2 || height < 2) return;
-      const pixelBudget = software ? 340_000 : 930_000;
-      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.4, Math.sqrt(pixelBudget / (width * height)));
+      const pixelBudget = software ? 550_000 : 2_400_000;
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(pixelBudget / (width * height)));
       renderer.setPixelRatio(pixelRatio);
       renderer.setSize(width, height, false);
       camera.aspect = width / height;
@@ -223,6 +236,10 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
     size();
 
     return {
+      inspect(x: number, y: number) {
+        inspection.x = x; inspection.y = y;
+        queueRender();
+      },
       draw(next: OrbitalPose, immediately = false) {
         if (!immediately && pose && pose.angle === next.angle && pose.camera === next.camera
           && pose.blush === next.blush && pose.navyLid === next.navyLid && pose.navyToys === next.navyToys
@@ -240,12 +257,14 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
         resize.disconnect();
         canvas.removeEventListener('webglcontextlost', lost);
         shadows.forEach(shadow => shadow.material.dispose());
+        interiorShadows.flat().forEach(shadow => shadow.material.dispose());
         boxes.forEach(box => box.surfaces.forEach(material => material.dispose()));
         key.shadow.dispose();
         floor.material.dispose();
         reflection.dispose();
         disposeToyModels(boxes.flatMap(box => box.toys.map(({ toy }) => toy)));
         contact.dispose();
+        toyContact.dispose();
         contactGeometry.dispose();
         workshop.dispose();
         releaseRenderer();

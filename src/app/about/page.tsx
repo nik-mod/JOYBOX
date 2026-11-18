@@ -1,5 +1,20 @@
 import { storefrontMetadata } from '@/lib/metadata';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
-export const metadata = storefrontMetadata('/about', 'ჩვენ შესახებ', 'გაიცანი ჯოიბოქსი, ქართული ბრენდი, რომელიც ბავშვებისთვის სიურპრიზის ყუთებს ქმნის.');
-export default function AboutPage() { return <main className="page-shell container" id="main"><div className="page-header"><span className="eyebrow">გაიცანი ჯოიბოქსი</span><h1>პატარა ყუთი.<br />დიდი სიხარული.</h1></div><div className="story-page"><div className="prose"><p>საჩუქრის ყველაზე ლამაზი ნაწილი ხშირად ის წამია, სანამ გახსნი — როცა ჯერ არ იცი, რა გელოდება და ყველაფერი შესაძლებელია.</p><p>ჯოიბოქსი ამ მოლოდინით იწყება. ჩვენ ვქმნით სიურპრიზის ყუთების ქართულ ბრენდს ბავშვებისთვის, სადაც თამაშს, ცნობისმოყვარეობასა და ახალი აღმოჩენის სიხარულს საკუთარი ადგილი აქვს.</p><h2>სიურპრიზი შიგნით. სიცხადე არჩევანისას.</h2><p>გვინდა, რომ საჩუქრის არჩევა მშობლებისთვის მარტივი იყოს. ამიტომ თითოეული ყუთის ასაკი, ზოგადი კატეგორიები და მნიშვნელოვანი ინფორმაცია შეძენამდე ხელმისაწვდომი იქნება.</p><p>ახლა პირველ კოლექციაზე ვმუშაობთ. მალე გაგიზიარებთ ყუთებს, რომელთა გახსნასაც მოუთმენლად დაელოდები.</p><Link className="text-link" href="/shop">აღმოაჩინე ყუთები <ArrowRight size={18} /></Link></div><img src="/brand/joybox-approved.png" width="1672" height="941" alt="ჯოიბოქსის ოფიციალური ქართული ლოგო" /></div></main>; }
+import { ArrowUpRight, Gift, ScanEye, ShieldCheck } from 'lucide-react';
+import { EditionPreview } from '@/components/edition-preview';
+export const metadata = storefrontMetadata('/about', 'ჩვენ შესახებ', 'გაიცანი ჯოიბოქსი — ქართული სიურპრიზის ყუთები ბავშვებისთვის.');
+export default function AboutPage() {
+ return <main className="page-shell container about-edition" id="main">
+  <section className="about-lead">
+   <div className="about-lead-copy"><h1>პატარა ყუთი.<br/><em>დიდი სიხარული.</em></h1><p>ყველაზე ლამაზი წამი — სანამ გახსნი.</p><Link className="button button-yellow" href="/shop">აირჩიე სიურპრიზი <ArrowUpRight size={19}/></Link></div>
+   <EditionPreview />
+  </section>
+  <section className="about-manifesto"><h2>საჩუქარი, რომელიც<br/>აღმოჩენით იწყება.</h2><p>ჯოიბოქსი ქართული სიურპრიზის ყუთების ბრენდია ბავშვებისთვის. გვჯერა თამაშის, ფანტაზიისა და იმ განსაკუთრებული მოლოდინის, როცა ჯერ არ იცი, რა გელოდება.</p></section>
+  <section className="about-principles">
+   <article><Gift/><h3>სიურპრიზი შიგნით.</h3><p>ყუთის ზუსტი შიგთავსი გახსნამდე სიურპრიზად რჩება. ვიზუალები საილუსტრაციოა.</p></article>
+   <article><ScanEye/><h3>მარტივი არჩევანი.</h3><p>ყუთი ბიჭებისთვის ან გოგონებისთვის — ორივე 29,90 ₾. რეკომენდებული ასაკი: 4–10 წელი.</p></article>
+   <article><ShieldCheck/><h3>მნიშვნელოვანი დეტალები.</h3><p>არჩევამდე გაეცანი უსაფრთხოების მითითებებს. თამაშამდე შეამოწმე თითოეული ნივთის ასაკობრივი ნიშნული.</p></article>
+  </section>
+  <section className="about-closing"><img src="/brand/box-berry.webp" width="900" height="600" loading="lazy" alt="ჯოიბოქსის ყუთი გოგონებისთვის"/><div><h2>მზად ხარ<br/>აღმოჩენისთვის?</h2><Link className="text-link" href="/shop">აღმოაჩინე ყუთები <ArrowUpRight size={20}/></Link></div></section>
+ </main>;
+}

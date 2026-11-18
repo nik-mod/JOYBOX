@@ -1,0 +1,52 @@
+[
+  {
+    "name": "Direct filters update URL and browser back restores catalog"
+  },
+  {
+    "name": "Filter panel animates, Escape returns focus"
+  },
+  {
+    "name": "Product detail respects existing cart quantity"
+  },
+  {
+    "name": "Disclosures animate height and reverse mid-close"
+  },
+  {
+    "name": "Cart persists and guards quantity controls"
+  },
+  {
+    "name": "Unconfigured checkout remains safely disabled"
+  },
+  {
+    "name": "FAQ topics, search, clear and open states work"
+  },
+  {
+    "name": "Mobile menu closes with Escape, restores focus and navigates"
+  },
+  {
+    "name": "48 viewport/route combinations fit 320–1920px"
+  },
+  {
+    "name": "No video or 3D models requested at hero"
+  },
+  {
+    "name": "Homepage film seeks forward and reverses",
+    "detail": [
+      1.291666,
+      4.5,
+      1.291666
+    ]
+  },
+  {
+    "name": "Orbital stages reverse and edition controls remain active"
+  },
+  {
+    "name": "Navigation releases pins and canvas; main never transforms"
+  },
+  {
+    "name": "Reduced motion uses no video/3D and disclosures remain native"
+  },
+  {
+    "name": "No browser runtime errors"
+  }
+]

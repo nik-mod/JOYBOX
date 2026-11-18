@@ -1,5 +1,5 @@
 import {
-  DataTexture, DoubleSide, ExtrudeGeometry, Group, LinearFilter, LinearMipmapLinearFilter,
+  CanvasTexture, DataTexture, DoubleSide, ExtrudeGeometry, Group, LinearFilter, LinearMipmapLinearFilter,
   Mesh, MeshStandardMaterial, PlaneGeometry, RepeatWrapping, RGBAFormat, Shape,
   SRGBColorSpace, type BufferGeometry, type Texture,
 } from 'three';
@@ -36,16 +36,16 @@ function kraftTexture() {
 }
 
 function tissueLiner() {
-  const tissue = new PlaneGeometry(2.102, 1.90, 26, 24);
+  const tissue = new PlaneGeometry(2.102, 1.90, 52, 48);
   tissue.rotateX(-Math.PI / 2);
   const vertices = tissue.getAttribute('position');
   for (let i = 0; i < vertices.count; i++) {
     const x = vertices.getX(i);
     const z = vertices.getZ(i);
     const edge = Math.max(Math.abs(x) / 1.051, Math.abs(z) / .95);
-    const fold = .029 * Math.sin(13 * x + 5 * z) ** 5 + .016 * Math.sin(6 * z - 15 * x) ** 3;
-    const curl = edge ** 9 * (.145 + .039 * Math.sin(10 * x - 7 * z) + .022 * Math.cos(23 * z + 4 * x));
-    const lowerRidge = .11 * Math.exp(-((x - .48) ** 2 / .13 + (z - .34) ** 2 / .12));
+    const fold = .023 * Math.sin(13 * x + 5 * z) ** 5 + .012 * Math.sin(6 * z - 15 * x) ** 3;
+    const curl = edge ** 7 * (.21 + .069 * Math.sin(10 * x - 7 * z) + .035 * Math.cos(23 * z + 4 * x));
+    const lowerRidge = .035 * Math.exp(-((x - .48) ** 2 / .13 + (z - .34) ** 2 / .12));
     vertices.setY(i, .524 + curl + fold + lowerRidge);
   }
   tissue.computeVertexNormals();
@@ -60,6 +60,19 @@ export function makeModelWorkshop() {
   const panels = new Map<string, BufferGeometry>();
   const kraft = kraftTexture();
   const tissue = tissueLiner();
+  // Ink printed directly on the inside of the lid, using the site's local Georgian font.
+  const printCanvas = document.createElement('canvas');
+  printCanvas.width = 1024; printCanvas.height = 320;
+  const ink = printCanvas.getContext('2d')!;
+  ink.fillStyle = '#685034'; ink.textAlign = 'center';
+  ink.font = '800 63px "Noto Georgian"';
+  ink.fillText('პატარა ყუთი.', 512, 119);
+  ink.fillText('დიდი სიხარული.', 512, 209);
+  const insidePrint = new CanvasTexture(printCanvas);
+  insidePrint.colorSpace = SRGBColorSpace;
+  const printMaterial = new MeshStandardMaterial({ map: insidePrint, transparent: true, roughness: 1,
+    polygonOffset: true, polygonOffsetFactor: -1, depthWrite: false });
+  const printGeometry = new PlaneGeometry(1.25, .39);
   const paper = new MeshStandardMaterial({ map: kraft, bumpMap: kraft, bumpScale: .010, roughness: .96 });
   const rim = new MeshStandardMaterial({ color: '#d4ad7a', bumpMap: kraft, bumpScale: .006, roughness: .94 });
   const crease = new MeshStandardMaterial({ color: '#8b653d', roughness: .98 });
@@ -90,13 +103,13 @@ export function makeModelWorkshop() {
 
   function box(art: BoxArtwork, pink: boolean) {
     const root = new Group();
-    const printed = (map: Texture) => new MeshStandardMaterial({ map, bumpMap: kraft, bumpScale: .007, roughness: .91,
-      envMapIntensity: .54 });
+    const printed = (map: Texture) => new MeshStandardMaterial({ map, bumpMap: kraft, bumpScale: .003, roughness: .74,
+      envMapIntensity: .65 });
     const { front, side, right, back, lid: top } = Object.fromEntries(
       Object.entries(art).map(([name, image]) => [name, printed(image)]),
     ) as Record<keyof BoxArtwork, MeshStandardMaterial>;
     const tucked = new MeshStandardMaterial({ color: pink ? '#932452' : '#092447', roughness: .93 });
-    const filler = new MeshStandardMaterial({ color: pink ? '#d9a2aa' : '#d4b979', bumpMap: kraft,
+    const filler = new MeshStandardMaterial({ color: pink ? '#ead7cc' : '#e6d6b9', bumpMap: kraft,
       bumpScale: .005, roughness: .94, side: DoubleSide });
     const middle = (height - board) / 2;
     panel(root, [width - 2 * board, board, depth - 2 * board], [0, board / 2, 0], paper);
@@ -115,6 +128,10 @@ export function makeModelWorkshop() {
     panel(lid, [width, board - .002, depth - .006], [0, board / 2 + .001, depth / 2 - .005], [tucked, tucked, top, paper, tucked, crease]);
     panel(lid, [width - .07, .056, .020], [0, -.025, depth - .044], paper);
     panel(lid, [width - .06, .008, .017], [0, -.001, .028], crease);
+    const innerMark = new Mesh(printGeometry, printMaterial);
+    innerMark.rotation.x = Math.PI / 2;
+    innerMark.position.set(0, -.013, 1.16);
+    lid.add(innerMark);
     for (const sign of [-1, 1]) {
       const tab = new Mesh(foldedTab, paper);
       tab.rotation.set(Math.PI, -Math.PI / 2, 0, 'YXZ');
@@ -132,6 +149,9 @@ export function makeModelWorkshop() {
       panels.forEach(geometry => geometry.dispose());
       foldedTab.dispose();
       tissue.dispose();
+      printGeometry.dispose();
+      printMaterial.dispose();
+      insidePrint.dispose();
       kraft.dispose();
       paper.dispose();
       rim.dispose();

@@ -5,10 +5,21 @@ import { Menu, ShoppingBag, X, ArrowUpRight } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Brand } from './brand';
 import { useCart } from './cart-context';
+import { gsap, useGSAP } from './motion';
 const links = [['/', 'მთავარი'], ['/shop', 'ყუთები'], ['/how-it-works', 'როგორ მუშაობს?'], ['/about', 'ჩვენ შესახებ']];
 export function Header() {
   const path = usePathname(); const { count } = useCart(); const dialog = useRef<HTMLDialogElement>(null); const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { contextSafe } = useGSAP(() => {
+    if (!menuOpen || !dialog.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    gsap.fromTo(dialog.current, { opacity: 0, y: -12 }, { opacity: 1, y: 0, duration: .32, ease: 'power3.out', clearProps: 'opacity,transform' });
+    gsap.fromTo(dialog.current.querySelectorAll('nav a'), { y: 12 }, { y: 0, stagger: .035, duration: .38, ease: 'power3.out', clearProps: 'transform' });
+  }, { dependencies: [menuOpen], revertOnUpdate: true });
+  const closeMenu = contextSafe(() => {
+    if (!dialog.current) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { dialog.current.close(); return; }
+    gsap.to(dialog.current, { opacity: 0, y: -8, duration: .2, ease: 'power2.in', overwrite: true, onComplete: () => dialog.current?.close() });
+  });
   useEffect(() => { const update = () => setScrolled(window.scrollY > 30); update(); window.addEventListener('scroll', update, { passive: true }); return () => window.removeEventListener('scroll', update); }, []);
   useEffect(() => { dialog.current?.close(); }, [path]);
   useEffect(() => {
@@ -27,7 +38,7 @@ export function Header() {
           <nav className="desktop-nav" aria-label="მთავარი ნავიგაცია">
             {links.map(([href, label]) => (
               <Link href={href} key={href} className={(href === '/' ? path === href : path.startsWith(href)) ? 'active' : ''}
-                aria-current={path === href ? 'page' : undefined}>{label}</Link>
+                aria-current={(href === '/' ? path === href : path.startsWith(href)) ? 'page' : undefined}>{label}</Link>
             ))}
           </nav>
           <div className="header-actions">
@@ -43,11 +54,12 @@ export function Header() {
         </div>
       </header>
       <dialog id="mobile-navigation" ref={dialog} className="mobile-menu" aria-label="მენიუ"
+        onCancel={event => { event.preventDefault(); closeMenu(); }}
         onClose={() => setMenuOpen(false)}>
         <div className="mobile-menu-top">
           <Brand />
           <button className="icon-button" type="button" aria-label="მენიუს დახურვა"
-            onClick={() => dialog.current?.close()}><X /></button>
+            onClick={closeMenu}><X /></button>
         </div>
         <nav aria-label="მობილური ნავიგაცია">
           {links.map(([href, label]) => (
@@ -55,7 +67,7 @@ export function Header() {
               onClick={() => dialog.current?.close()}>{label}<ArrowUpRight size={23} /></Link>
           ))}
         </nav>
-        <Link className="text-link" href="/faq" onClick={() => dialog.current?.close()}>ხშირად დასმული კითხვები</Link>
+        <div className="mobile-menu-help"><Link href="/faq" onClick={() => dialog.current?.close()}>კითხვები და პასუხები</Link><Link href="/contact" onClick={() => dialog.current?.close()}>კონტაქტი</Link></div>
       </dialog>
     </>
   );

@@ -1,0 +1,40 @@
+[
+  {
+    "name": "Hero still defers video and WebGL"
+  },
+  {
+    "name": "Hero pointer camera and pause control work"
+  },
+  {
+    "name": "3D stops rendering while stationary"
+  },
+  {
+    "name": "Pointer inspection renders the product camera"
+  },
+  {
+    "name": "3D sequence reverses to the first edition"
+  },
+  {
+    "name": "Recorded local scroll frame timing",
+    "detail": {
+      "renderer": "ANGLE (Intel, Intel(R) UHD Graphics (0x0000A788) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+      "median": 6.100000001490116,
+      "p95": 6.699999995529652
+    }
+  },
+  {
+    "name": "Navigation cleans up the WebGL scene and pins"
+  },
+  {
+    "name": "Edition preview handles keyboard and rapid reversals"
+  },
+  {
+    "name": "40 responsive page checks at 320–1920px"
+  },
+  {
+    "name": "Reduced motion preserves static layout and product choice"
+  },
+  {
+    "name": "No browser runtime errors"
+  }
+]
