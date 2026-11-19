@@ -9,6 +9,7 @@ import { arrangeOrbitalToys, disposeToyModels, loadOrbitalToys } from './orbital
 
 export type OrbitalPose = {
   angle: number;
+  turn: number;
   camera: number;
   blush: number;
   navyLid: number;
@@ -104,8 +105,8 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
     studio.dispose();
     pmrem.dispose();
     const camera = new PerspectiveCamera(36, 1, .1, 45);
-    const hemisphere = new HemisphereLight('#fff9f1', warmGround, .42);
-    const key = new DirectionalLight(warmLight, 1.6);
+    const hemisphere = new HemisphereLight('#fff9f1', warmGround, .47);
+    const key = new DirectionalLight(warmLight, 1.48);
     key.position.set(-4.6, 6.4, 3.6);
     key.castShadow = true;
     const shadowSize = software ? 1024 : 2048;
@@ -117,7 +118,7 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
     key.shadow.normalBias = .006;
     key.shadow.bias = -.0002;
     key.shadow.radius = software ? 12 : 22;
-    const rim = new DirectionalLight('#fff2e7', .34);
+    const rim = new DirectionalLight('#fff2e7', .39);
     rim.position.set(3.5, 4.4, -4.2);
     scene.add(hemisphere, key, rim);
 
@@ -159,7 +160,6 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
     let request = 0;
     let framing = 1;
     let disposed = false;
-    const inspection = { x: 0, y: 0 };
 
     function render() {
       request = 0;
@@ -169,12 +169,11 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
       const travel = Math.max(0, parallax);
       const extraWidth = Math.max(1, 1.185 / camera.aspect) / framing - 1;
       const dolly = pose.camera + .22 * travel + extraWidth * travel ** .65;
-      camera.position.set(.09 + .26 * parallax + inspection.x * .48,
-        3.43 * framing * dolly + inspection.y * .18, 7.45 * framing * dolly);
+      camera.position.set(.09 + .26 * parallax, 3.43 * framing * dolly, 7.45 * framing * dolly);
       camera.lookAt(.015 - .18 * parallax, .77, 0);
       key.color.copy(warmLight).lerp(pinkLight, pose.blush);
       hemisphere.groundColor.copy(warmGround).lerp(pinkGround, pose.blush);
-      key.intensity = 1.6 - pose.blush * .09;
+      key.intensity = 1.48 - pose.blush * .07;
 
       for (const [index, box] of boxes.entries()) {
         const angle = pose.angle + index * Math.PI;
@@ -182,18 +181,18 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
         const side = Math.sin(angle);
         const opening = index === 0 ? pose.navyLid : pose.pinkLid;
         box.root.position.set(side * 1.65 - near * .62, 0, near * 1.57 + side * .16);
-        box.root.rotation.y = .41 - side * .16 - near * .08 + (pose.camera - 1) * .84 - opening * .12;
+        box.root.rotation.y = .41 - side * .16 - near * .08 + (pose.camera - 1) * .84 - opening * .12 + pose.turn;
         box.lid.rotation.x = -2.18 * opening;
 
         const revealed = index === 0 ? pose.navyToys : pose.pinkToys;
         box.toys.forEach(({ toy, raised, yaw, z }, toyIndex) => {
-          const rise = Math.min(1, Math.max(0, (revealed - toyIndex * .038) / .70));
+          const rise = Math.min(1, Math.max(0, (revealed - toyIndex * .034) / .70));
           const softened = rise * rise * (3 - 2 * rise);
           toy.visible = rise > .002;
           toy.position.y = .16 + (raised - .16) * softened;
           toy.position.z = z - .035 * (1 - softened);
-          toy.rotation.y = yaw + .14 * (1 - softened);
-          interiorShadows[index][toyIndex].material.opacity = softened * .18;
+          toy.rotation.y = yaw + .06 * (1 - softened);
+          interiorShadows[index][toyIndex].material.opacity = softened * .22;
         });
 
         const shadow = shadows[index];
@@ -236,12 +235,8 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
     size();
 
     return {
-      inspect(x: number, y: number) {
-        inspection.x = x; inspection.y = y;
-        queueRender();
-      },
       draw(next: OrbitalPose, immediately = false) {
-        if (!immediately && pose && pose.angle === next.angle && pose.camera === next.camera
+        if (!immediately && pose && pose.turn === next.turn && pose.angle === next.angle && pose.camera === next.camera
           && pose.blush === next.blush && pose.navyLid === next.navyLid && pose.navyToys === next.navyToys
           && pose.pinkLid === next.pinkLid && pose.pinkToys === next.pinkToys) return;
         pose = { ...next };

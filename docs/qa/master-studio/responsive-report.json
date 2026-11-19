@@ -1,0 +1,32 @@
+{
+  "routes": [
+    "/",
+    "/shop",
+    "/shop/joybox-navy",
+    "/shop/joybox-berry",
+    "/how-it-works",
+    "/about",
+    "/faq",
+    "/cart",
+    "/checkout",
+    "/contact",
+    "/delivery",
+    "/returns",
+    "/terms",
+    "/privacy",
+    "/order/unavailable",
+    "/admin/login",
+    "/missing-page"
+  ],
+  "widths": [
+    375,
+    390,
+    768,
+    1024,
+    1440,
+    1920,
+    2560
+  ],
+  "failures": [],
+  "errors": []
+}

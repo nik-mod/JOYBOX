@@ -2,12 +2,13 @@
 import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { ArrowDown, ArrowRight, ArrowUpRight } from 'lucide-react';
+import { ordersOpeningLater, plannedDelivery } from '@/lib/preview-copy';
 import { allowMotion, gsap, ScrollTrigger, useGSAP } from './motion';
 import './how-journey.css';
 
 const chapters = [
   { title: 'აირჩიე ყუთი', line: 'შეარჩიე შენი სიურპრიზი.', label: 'არჩევანი', stop: .12 },
-  { title: 'მიიღე სახლში', line: 'სიხარული შენს კართან.', label: 'მოლოდინი', stop: .36 },
+  { title: 'მიიღე სახლში', line: plannedDelivery, label: 'მიწოდება', stop: .36 },
   { title: 'გახსენი სიურპრიზი!', line: 'აღმოაჩინე, რა იმალება შიგნით.', label: 'აღმოჩენა', stop: .85 },
 ];
 const cuts = [.28, .47];
@@ -35,15 +36,17 @@ export function HowJourney() {
     const stage = page?.querySelector<HTMLElement>('.journey-stage');
     if (!page || !stage || !video) return;
     const media = gsap.matchMedia();
-    media.add('(prefers-reduced-motion: reduce), (max-height: 539px)', () => setMode('still'));
-    media.add(allowMotion + ' and (min-height: 540px)', () => {
-      const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
-      if (connection?.saveData) { setMode('still'); return; }
+    media.add('(prefers-reduced-motion: reduce), (max-height: 649px)', () => setMode('still'));
+    media.add(allowMotion + ' and (min-height: 650px)', context => {
+      const connection = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+      if (connection?.saveData || connection?.effectiveType?.endsWith('2g')) { setMode('still'); return; }
       setMode('loading');
       setActive(0);
       let disposed = false, failed = false, ready = false;
       let raf = 0, target = 0, progress = 0, currentChapter = 0, seekStarted = 0, slowSeeks = 0;
       let timer: ReturnType<typeof setTimeout> | undefined;
+      let seekDeadline: ReturnType<typeof setTimeout> | undefined;
+      let trigger: ScrollTrigger | undefined;
       const rows = Array.from(stage.querySelectorAll<HTMLElement>('.journey-chapter'));
       const advance = gsap.quickSetter(stage.querySelector('.journey-progress-fill'), 'scaleX');
       if (window.scrollY < 120) {
@@ -53,16 +56,19 @@ export function HowJourney() {
       }
       gsap.to('.journey-intro-title', { y: -26, ease: 'none', scrollTrigger: { trigger: '.journey-intro', start: 'top top', end: 'bottom top', scrub: .4 } });
       gsap.from('.journey-end h2', { y: 32, opacity: .5, duration: .8, ease: 'power3.out', clearProps: 'transform,opacity', scrollTrigger: { trigger: '.journey-end', start: 'top 85%', once: true } });
-      stage.dataset.enhanced = 'true';
-      gsap.set(rows.slice(1), { clipPath: 'inset(100% 0 0 0)', y: 18, autoAlpha: 0 });
-      gsap.set(rows[0], { clipPath: 'inset(0% 0 0 0)', y: 0, autoAlpha: 1 });
       const seekLatest = () => {
         if (!ready || disposed || failed || video.seeking || raf) return;
         raf = requestAnimationFrame(() => {
           raf = 0;
           if (video.seeking || Math.abs(video.currentTime - target) < .5 / fps) return;
           seekStarted = performance.now();
-          try { video.currentTime = target; } catch { fallback('error'); }
+          try {
+            clearTimeout(seekDeadline);
+            video.currentTime = target + .125 / fps;
+            seekDeadline = setTimeout(() => {
+              if (video.seeking) fallback('still');
+            }, 2500);
+          } catch { fallback('error'); }
         });
       };
       const playhead = { progress: 0 };
@@ -82,37 +88,49 @@ export function HowJourney() {
           .fromTo(rows[index + 1], { clipPath: 'inset(100% 0 0 0)', y: 18, autoAlpha: 0 },
             { clipPath: 'inset(0% 0 0 0)', y: 0, autoAlpha: 1, duration: .05, immediateRender: false }, cut);
       });
-      const trigger = ScrollTrigger.create({
-        id: 'joybox-journey', trigger: stage, animation: timeline,
-        start: () => `top top+=${window.innerWidth <= 850 ? 82 : 88}`,
-        end: () => '+=' + Math.round(window.innerHeight * (window.innerWidth < 700 ? 2.5 : 3)),
-        pin: true, scrub: .4, invalidateOnRefresh: true, anticipatePin: 1,
+      const enhance = context.add('enhance', () => {
+        stage.dataset.enhanced = 'true';
+        gsap.set(rows.slice(1), { clipPath: 'inset(100% 0 0 0)', y: 18, autoAlpha: 0 });
+        gsap.set(rows[0], { clipPath: 'inset(0% 0 0 0)', y: 0, autoAlpha: 1 });
+        trigger = ScrollTrigger.create({
+          id: 'joybox-journey', trigger: stage, animation: timeline,
+          start: () => `top top+=${document.querySelector('.site-header')?.clientHeight ?? 88}`,
+          end: () => '+=' + Math.round(window.innerHeight * (window.innerWidth < 700 ? 2.1 : 2.5)),
+          pin: true, scrub: .38, invalidateOnRefresh: true, anticipatePin: 1,
+        });
+        triggerRef.current = trigger;
       });
-      triggerRef.current = trigger;
       function fallback(reason: 'still' | 'error') {
         if (failed || disposed) return;
         failed = true;
-        const before = stage!.getBoundingClientRect().top, anchored = trigger.isActive;
-        trigger.kill(); triggerRef.current = null; timeline.kill();
+        const before = stage!.getBoundingClientRect().top, anchored = trigger?.isActive;
+        trigger?.kill(); triggerRef.current = null; timeline.kill();
         if (raf) cancelAnimationFrame(raf);
         if (timer) clearTimeout(timer);
+        clearTimeout(seekDeadline);
         delete stage!.dataset.enhanced;
         gsap.set(rows, { clearProps: 'all' });
         setMode(reason);
         video!.removeAttribute('src'); video!.load();
-        ScrollTrigger.refresh();
+        if (trigger) ScrollTrigger.refresh();
         // Preserve the visible section anchor if a decoder fails while pinned.
         if (anchored) window.scrollBy({ top: stage!.getBoundingClientRect().top - before, behavior: 'instant' });
       }
       const onReady = () => {
         if (failed || disposed || ready || !Number.isFinite(video.duration) || video.duration < 1 || video.readyState < 2) return;
+        if (stage.getBoundingClientRect().bottom < 90 || window.location.hash === '#journey-end') {
+          fallback('still');
+          return;
+        }
         ready = true;
         if (timer) clearTimeout(timer);
+        enhance();
         setMode('ready');
         target = Math.round(filmTime(progress, video.duration) * fps) / fps;
         seekLatest();
       };
       const seeked = () => {
+        clearTimeout(seekDeadline);
         if (failed || disposed) return;
         slowSeeks = seekStarted && performance.now() - seekStarted > 900 && !document.hidden ? slowSeeks + 1 : 0;
         if (slowSeeks >= 3) { fallback('still'); return; }
@@ -129,13 +147,14 @@ export function HowJourney() {
         video.src = window.innerWidth <= 850 ? '/brand/how-journey-mobile.mp4' : '/brand/how-journey.mp4';
         video.load();
         timer = setTimeout(() => { if (!ready) fallback('error'); }, 15000);
-      }, { rootMargin: '1200px 0px' });
+      }, { rootMargin: '420px 0px' });
       observer.observe(stage);
       return () => {
         disposed = true; observer.disconnect();
         if (timer) clearTimeout(timer);
+        clearTimeout(seekDeadline);
         if (raf) cancelAnimationFrame(raf);
-        trigger.kill(); triggerRef.current = null; timeline.kill();
+        trigger?.kill(); triggerRef.current = null; timeline.kill();
         video.removeEventListener('loadeddata', onReady);
         video.removeEventListener('canplay', onReady);
         video.removeEventListener('seeked', seeked);
@@ -153,15 +172,14 @@ export function HowJourney() {
   };
   return <main id="main" ref={root} className="how-journey" data-mode={mode}>
     <section className="journey-intro">
-      <div className="journey-intro-top"><span>JOYBOX / აღმოჩენის გზა</span><span>01 — 03</span></div>
-      <h1 className="journey-intro-title"><span><span className="journey-title-ink">როგორ მუშაობს</span></span><span><span className="journey-title-ink">ჯოიბოქსი?</span></span></h1>
+      <h1 className="journey-intro-title"><span><span className="journey-title-ink">როგორ მუშაობს</span></span>{' '}<span><span className="journey-title-ink">ჯოიბოქსი?</span></span></h1>
       <div className="journey-intro-foot"><p>შენ ირჩევ ყუთს.<br />სიურპრიზი შიგნით გელოდება.</p>
         <a href="#journey-film" className="journey-begin">დაიწყე აღმოჩენა <ArrowDown size={20} aria-hidden="true" /></a>
       </div>
     </section>
     <section className="journey-film" id="journey-film" aria-label="ჯოიბოქსის აღმოჩენის სამი ეტაპი">
       <div className="journey-stage">
-        <div className="journey-stage-top"><span>სიხარულის სამი ეტაპი</span><a href="#journey-end">ყუთებზე გადასვლა <ArrowUpRight size={15} /></a></div>
+        <div className="journey-stage-top"><a href="#journey-end">ყუთებზე გადასვლა <ArrowUpRight size={15} aria-hidden="true" /></a></div>
         <div className="journey-composition">
           <ol className="journey-chapters">
             {chapters.map(({ title, line, label }, index) => <li className="journey-chapter" id={`journey-step-${index}`} key={title}>
@@ -177,7 +195,6 @@ export function HowJourney() {
               </picture>
               <video ref={videoRef} muted playsInline preload="none" aria-hidden="true" disablePictureInPicture />
             </div>
-            <figcaption>კონცეპტუალური ვიზუალი. შიგთავსი საილუსტრაციოა.</figcaption>
           </figure>
         </div>
         <div className="journey-stage-bottom">
@@ -187,16 +204,17 @@ export function HowJourney() {
               <span>0{index + 1}</span><span>{label}</span>
             </button>)}
           </nav>
-          <span className="journey-scroll-note" role="status">{mode === 'error' ? 'ვიდეო ვერ ჩაიტვირთა — ნაბიჯები სრულად ჩანს.' : mode === 'loading' ? 'კადრები იტვირთება…' : mode === 'ready' ? 'გახსენი სქროლით' : 'აღმოჩენა შენი ტემპით'}</span>
+          <span className="journey-scroll-note" role="status">{mode === 'error' ? 'ვიდეო ვერ ჩაიტვირთა. წაიკითხე ნაბიჯები ზემოთ.' : mode === 'ready' ? 'გახსენი სქროლით' : ''}</span>
         </div>
       </div>
     </section>
     <section className="journey-end" id="journey-end">
-      <span className="journey-end-kicker">ახლა შენი ჯერია</span>
-      <h2>მზად ხარ<br /><em>სიურპრიზისთვის?</em></h2>
-      <Link className="button button-yellow" href="/shop">აღმოაჩინე ყუთები <ArrowRight size={21} /></Link>
-      <div className="journey-end-details"><span>4–10 წლის ბავშვებისთვის</span><span>29,90 ₾ / ყუთი</span><Link href="/faq">კითხვები და პასუხები <ArrowUpRight size={15} /></Link></div>
-      <p className="journey-expectations">ვიზუალებში ნაჩვენები სათამაშოები საილუსტრაციოა. ზუსტი შიგთავსი შეიძლება განსხვავდებოდეს. გადახდისა და მიწოდების პირობები გამოქვეყნდება შეკვეთების მიღების დაწყებამდე.</p>
+      <h2>მზად ხარ <em>სიურპრიზისთვის?</em></h2>
+      <div className="journey-end-actions">
+        <p>{ordersOpeningLater}</p>
+        <Link className="button button-yellow" href="/shop">აღმოაჩინე ყუთები <ArrowRight size={21} aria-hidden="true" /></Link>
+        <Link className="text-link" href="/faq">კითხვები და პასუხები <ArrowUpRight size={16} aria-hidden="true" /></Link>
+      </div>
     </section>
   </main>;
 }

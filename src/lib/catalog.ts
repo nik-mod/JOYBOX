@@ -21,7 +21,7 @@ export const getProduct = cache(async (slug: string): Promise<Product | null> =>
   return data as Product | null;
 });
 export const getSettings = cache(async (): Promise<StoreSettings> => {
-  const initial: StoreSettings = {contact_email:'',contact_phone:'',delivery_zones:[],policies:{},checkout_enabled:false};
+  const initial: StoreSettings = {contact_email:'',contact_phone:'+995579284889',delivery_zones:[{ id: 'georgia', name: 'საქართველო', price_minor: 0 }],policies:{ delivery: 'მიწოდება უფასოა საქართველოს მთელ ტერიტორიაზე.' },checkout_enabled:false};
   const client = createPublicClient();
   if (!client) return initial;
   const {data,error} = await client.from('store_settings').select('contact_email,contact_phone,delivery_zones,policies,checkout_enabled').eq('id',1).maybeSingle();

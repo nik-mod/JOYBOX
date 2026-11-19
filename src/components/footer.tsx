@@ -1,12 +1,15 @@
 import Link from 'next/link';
 import { Brand } from './brand';
 import { FooterMotion } from './footer-motion';
+import { getSettings } from '@/lib/catalog';
+import { previewPhone } from '@/lib/preview-copy';
 
-export function Footer() {
+export async function Footer() {
+  const settings = await getSettings().catch(() => null);
   return (
     <FooterMotion>
       <div className="footer-edition container">
-        <div className="footer-brand"><Brand large /><p>პატარა ყუთი. დიდი სიხარული.</p></div>
+        <div className="footer-brand"><Brand large /><p>სიურპრიზის ყუთები ბავშვებისთვის.</p></div>
         <nav className="footer-links" aria-label="ჯოიბოქსის შესახებ">
           <h3>აღმოაჩინე</h3>
           <Link href="/shop">ჩვენი ყუთები</Link>
@@ -19,6 +22,8 @@ export function Footer() {
           <Link href="/delivery">მიწოდება</Link>
           <Link href="/returns">დაბრუნება</Link>
           <Link href="/contact">კონტაქტი</Link>
+          <a href={previewPhone.href}>{previewPhone.label}</a>
+          {settings?.contact_email && <a href={`mailto:${settings.contact_email}`}>{settings.contact_email}</a>}
         </nav>
       </div>
       <div className="footer-bottom container">

@@ -103,8 +103,9 @@ export function makeModelWorkshop() {
 
   function box(art: BoxArtwork, pink: boolean) {
     const root = new Group();
-    const printed = (map: Texture) => new MeshStandardMaterial({ map, bumpMap: kraft, bumpScale: .003, roughness: .74,
-      envMapIntensity: .65 });
+    const printed = (map: Texture) => new MeshStandardMaterial({
+      map, bumpMap: kraft, bumpScale: .0024, roughness: .79, envMapIntensity: .6,
+    });
     const { front, side, right, back, lid: top } = Object.fromEntries(
       Object.entries(art).map(([name, image]) => [name, printed(image)]),
     ) as Record<keyof BoxArtwork, MeshStandardMaterial>;

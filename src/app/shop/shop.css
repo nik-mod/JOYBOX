@@ -226,3 +226,203 @@
  .shop-search input { font-size: 16px; }
 }
 @media(prefers-reduced-motion:reduce) { .shop-menu-panel, .shop-menu-chevron, .shop-quick-filters button::after { transition: none; } }
+
+.shop-loading-controls {
+  height: 11rem;
+  border-block: 1px solid var(--shop-line);
+  background: var(--shop-surface);
+}
+.shop-loading-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(24px, 4vw, 60px);
+  padding-top: 13px;
+}
+.shop-loading-grid > div { aspect-ratio: 3 / 2; border-radius: 14px; background: #f1e7d7; }
+
+.shop-editions .product-item {
+  --edition-surface: #f7efdf;
+  --edition-edge: #ddd1bc;
+  --edition-ink: #1e3556;
+  display: flex;
+  flex-direction: column;
+  border: 0;
+  border-radius: 14px;
+  padding-bottom: 0;
+  background: var(--edition-surface);
+  box-shadow: 0 15px 35px #34261910;
+}
+.shop-editions .product-item[data-packaging='pink-berry'] {
+  --edition-surface: #f8ebed;
+  --edition-edge: #e8ccd4;
+  --edition-ink: #792744;
+}
+.shop-editions .product-item .product-image {
+  margin-bottom: 0;
+  border-radius: 14px 14px 0 0;
+}
+.shop-editions .product-image:focus-visible { position: relative; z-index: 1; }
+.shop-editions .product-card-copy {
+  flex: 1;
+  display: grid;
+  align-content: start;
+  padding: clamp(16px, 2.25vw, 32px);
+}
+.shop-editions .product-card-copy h3 {
+  margin: 0;
+  max-width: none;
+  color: var(--edition-ink);
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.shop-editions .product-card-copy .product-meta { margin-block: 7px 10px; }
+.shop-editions .product-card-copy .product-price {
+  color: var(--edition-ink);
+  font-variant-numeric: tabular-nums;
+}
+.shop-editions .product-card-copy .packaging-label { justify-self: start; }
+.shop-editions .product-card-copy .button-outline {
+  min-height: 45px;
+  margin: 14px 0 0;
+  border-block-start: 1px solid var(--edition-edge);
+  border-block-end: 0;
+  color: var(--edition-ink);
+}
+.shop-editions .product-card-copy .button-outline:hover {
+  background: transparent;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transform: none;
+}
+.shop-editions .product-card-copy .button-outline svg { transition: translate .22s var(--shop-ease); }
+.shop-editions .product-card-copy .button-outline:hover svg { translate: 3px; }
+
+.product-edition .product-media-column { position: sticky; top: 114px; min-width: 0; }
+.product-edition .product-media-column .product-gallery { position: static; }
+.product-edition .product-other-edition {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 54px;
+  margin-top: 13px;
+  padding: 9px 4px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  font-weight: 800;
+}
+.product-edition .product-other-edition > svg { margin-inline-start: auto; }
+.product-edition .product-other-edition:hover { text-decoration: underline; text-underline-offset: 4px; }
+.product-edition .product-copy .product-edition-price .detail-price {
+  font-size: clamp(26px, 2.65vw, 38px);
+  font-variant-numeric: tabular-nums;
+}
+.product-edition .product-essential-facts { gap: 14px 24px; margin-top: 19px; }
+.product-edition .product-essential-facts .packaging-label { font-size: inherit; margin-bottom: 0; }
+.product-launch-note {
+  display: grid;
+  gap: 13px;
+  margin-block: 18px 22px;
+  padding: clamp(14px, 2vw, 23px);
+  border: 0;
+  background: #f6ebd9;
+  border-radius: 12px;
+  color: #253851;
+}
+.product-launch-note p {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  align-items: start;
+  gap: 11px;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.product-launch-note p > svg { margin-top: 2px; color: #82531d; }
+.product-edition .product-photo-zoom {
+  position: relative;
+  width: 100%;
+  padding: 0;
+  border-radius: 14px;
+  cursor: zoom-in;
+}
+.product-edition .product-photo-zoom picture,
+.product-edition .product-photo-zoom img { display: block; }
+.product-photo-zoom-icon {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  right: 12px;
+  bottom: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #fff8ea;
+  color: #102541;
+  box-shadow: 0 5px 14px #21150925;
+  transition: background .22s, scale .22s;
+}
+.product-photo-zoom:hover .product-photo-zoom-icon,
+.product-photo-zoom:focus-visible .product-photo-zoom-icon { background: #ffce42; scale: 1.06; }
+.product-photo-dialog {
+  position: fixed;
+  inset: 0;
+  width: min(92vw, 1100px);
+  max-width: none;
+  max-height: calc(100dvh - 26px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 14px;
+  overflow: auto;
+  background: #f4e5d3;
+  color: #102541;
+}
+.product-photo-dialog::backdrop { background: #08182ae6; }
+body:has(.product-photo-dialog[open]) { overflow: hidden; }
+.product-photo-dialog-body { position: relative; }
+.product-photo-dialog-body > img {
+  display: block;
+  width: 100%;
+  min-height: 80px;
+  max-height: calc(100dvh - 26px);
+  object-fit: contain;
+}
+.product-photo-close {
+  position: absolute;
+  z-index: 1;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #fff8ea;
+  color: #102541;
+}
+.product-photo-close:hover { background: #ffce42; }
+
+@media (max-width: 850px) {
+  .product-edition .product-media-column { position: static; }
+  .shop-loading-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 360px) {
+  .shop-quick-filters {
+    display: grid;
+    grid-template-columns: minmax(0, .84fr) minmax(0, 1fr) minmax(0, 1.16fr);
+    gap: 5px;
+  }
+  .shop-quick-filters button {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .product-photo-zoom-icon, .shop-editions .product-card-copy .button-outline svg { transition: none; }
+  .product-photo-zoom:hover .product-photo-zoom-icon,
+  .product-photo-zoom:focus-visible .product-photo-zoom-icon { scale: 1; }
+  .shop-editions .product-card-copy .button-outline:hover svg { translate: 0; }
+}

@@ -1,35 +1,29 @@
 'use client';
 
 import Link from 'next/link';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { PackagingPhoto } from './packaging-photo';
-import { gsap, useGSAP } from './motion';
+
+const editions = [
+  { color: 'navy-yellow' as const, name: 'ბიჭებისთვის', slug: 'joybox-navy' },
+  { color: 'pink-berry' as const, name: 'გოგონებისთვის', slug: 'joybox-berry' },
+];
 
 /** A real product choice, with the photography and destination kept in sync. */
 export function EditionPreview() {
   const [selected, setSelected] = useState(0);
-  const root = useRef<HTMLDivElement>(null);
-  const mounted = useRef(false);
-  const editions = [
-    { color: 'navy-yellow' as const, name: 'ბიჭებისთვის', slug: 'joybox-navy' },
-    { color: 'pink-berry' as const, name: 'გოგონებისთვის', slug: 'joybox-berry' },
-  ];
-  useGSAP(() => {
-    if (!mounted.current) { mounted.current = true; return; }
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    gsap.fromTo('.edition-preview-photo', { x: 20, opacity: .5 }, {
-      x: 0, opacity: 1, duration: .55, ease: 'power3.out', clearProps: 'transform,opacity',
-    });
-  }, { scope: root, dependencies: [selected], revertOnUpdate: true });
-  return <div className="edition-preview" ref={root} data-edition={selected}>
+  const active = editions[selected];
+  return <div className="edition-preview" data-edition={selected}>
     <div className="edition-preview-tabs" role="group" aria-label="ყუთის არჩევა">
       {editions.map((edition, index) => <button key={edition.color} type="button" aria-pressed={selected === index}
-        onClick={() => setSelected(index)}><span className={`edition-dot edition-dot-${index}`} />{edition.name}</button>)}
+        onClick={() => setSelected(index)}><span className={`edition-dot edition-dot-${index}`} aria-hidden="true" />{edition.name}</button>)}
     </div>
-    <Link className="edition-preview-photo" href={`/shop/${editions[selected].slug}`} aria-label={`ყუთი ${editions[selected].name}`}>
-      <PackagingPhoto color={editions[selected].color} loading="eager" />
+    <Link className="edition-preview-photo" href={`/shop/${active.slug}`} aria-label={`ყუთი ${active.name}`}>
+      {editions.map((edition, index) => <span key={edition.color} aria-hidden={index !== selected}>
+        <PackagingPhoto color={edition.color} loading={index === 0 ? 'eager' : 'lazy'} />
+      </span>)}
     </Link>
-    <div className="edition-preview-caption"><span>4–10 წლის ბავშვებისთვის</span><Link href={`/shop/${editions[selected].slug}`}>გაიცანი ყუთი <ArrowUpRight size={18}/></Link></div>
+    <div className="edition-preview-caption"><span>4–10 წლის ბავშვებისთვის</span><Link href={`/shop/${active.slug}`}>გაიცანი ყუთი <ArrowUpRight size={18} aria-hidden="true" /></Link></div>
   </div>;
 }

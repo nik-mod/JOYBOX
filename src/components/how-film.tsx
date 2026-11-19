@@ -33,19 +33,33 @@ export function HowFilm() {
       if ((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData) return;
       let trigger: ScrollTrigger | undefined;
       let timeline: gsap.core.Timeline | undefined;
-      let pendingSeek = 0;
-      let target = 0;
+      let targetFrame = 0;
+      let requestedFrame = 0;
+      let retryFrame = 0;
       let failed = false;
       let near = false;
       let loading = false;
       let timeout: ReturnType<typeof setTimeout> | undefined;
 
       const seekLatest = () => {
-        if (failed || video.seeking || pendingSeek) return;
-        pendingSeek = requestAnimationFrame(() => {
-          pendingSeek = 0;
-          if (video.seeking || Math.abs(video.currentTime - target) < 1 / (frameRate * 2)) return;
-          try { video.currentTime = target; } catch { onError(); }
+        // ScrollTrigger already updates on the animation tick. Only send one
+        // seek at a time and discard intermediate targets while it decodes.
+        if (failed || retryFrame || video.seeking || requestedFrame === targetFrame) return;
+        requestedFrame = targetFrame;
+        // Seek just inside the frame to avoid rounding down at a sample boundary.
+        try {
+          clearTimeout(timeout);
+          video.currentTime = (requestedFrame + .125) / frameRate;
+          timeout = setTimeout(() => { if (video.seeking) onError(); }, 2500);
+        } catch { onError(); }
+      };
+      const onSeeked = () => {
+        clearTimeout(timeout);
+        // Leave the media event before requesting another frame for WebKit.
+        if (failed || retryFrame || requestedFrame === targetFrame) return;
+        retryFrame = requestAnimationFrame(() => {
+          retryFrame = 0;
+          seekLatest();
         });
       };
 
@@ -57,7 +71,7 @@ export function HowFilm() {
           paused: true,
           defaults: { ease: 'none' },
           onUpdate() {
-            target = Math.min(lastFrame, Math.round(playhead.frame)) / frameRate;
+            targetFrame = Math.min(lastFrame, Math.round(playhead.frame));
             const progress = this.progress();
             const beat = progress >= stepCuts[1] ? '3' : progress >= stepCuts[0] ? '2' : '1';
             if (stage.dataset.beat !== beat) stage.dataset.beat = beat;
@@ -73,12 +87,13 @@ export function HowFilm() {
           previous = progress;
         }
         for (const [index, cut] of stepCuts.entries()) {
-          timeline.to(rows[index], { clipPath: 'inset(0% 0% 100% 0%)', y: -14, duration: .04 }, cut - .04)
-            .to(rows[index + 1], { clipPath: openMask, y: 0, duration: .055 }, cut);
+          timeline.to(rows[index], { clipPath: 'inset(0% 0% 100% 0%)', y: -10, duration: .034 }, cut - .034)
+            .to(rows[index + 1], { clipPath: openMask, y: 0, duration: .045 }, cut);
         }
 
         // A late network response must not pin a scene the visitor has already entered.
-        const canPin = stage.getBoundingClientRect().top > 24;
+        const hasSectionAnchor = ['#how', '#collection', '#unboxing'].includes(window.location.hash);
+        const canPin = !hasSectionAnchor && stage.getBoundingClientRect().top > 24;
         stage.dataset.scrub = canPin ? 'pinned' : 'inline';
         stage.dataset.beat = '1';
         trigger = ScrollTrigger.create({
@@ -86,9 +101,9 @@ export function HowFilm() {
           trigger: stage,
           animation: timeline,
           start: canPin ? 'top top' : 'top top+=24',
-          end: canPin ? () => '+=' + gsap.utils.clamp(700, 1100, window.innerHeight * 1.03) : 'center 12%',
+          end: canPin ? () => '+=' + Math.round(gsap.utils.clamp(940, 1500, window.innerHeight * 1.38)) : 'center 12%',
           pin: canPin,
-          scrub: .4,
+          scrub: .28,
           anticipatePin: canPin ? 1 : 0,
         });
       });
@@ -101,10 +116,13 @@ export function HowFilm() {
         install();
       };
       const onError = () => {
+        if (failed) return;
         failed = true;
         stage.dataset.frame = 'error';
-        if (pendingSeek) cancelAnimationFrame(pendingSeek);
         clearTimeout(timeout);
+        cancelAnimationFrame(retryFrame);
+        video.removeAttribute('src');
+        video.load();
         const anchored = trigger?.isActive;
         const before = stage.getBoundingClientRect().top;
         trigger?.kill(); timeline?.revert();
@@ -114,22 +132,23 @@ export function HowFilm() {
         if (anchored) window.scrollBy({ top: stage.getBoundingClientRect().top - before, behavior: 'instant' });
       };
       const load = () => {
-        if (!near || loading || failed || window.scrollY < 48) return;
+        if (!near || loading || failed || window.scrollY < 24) return;
         loading = true;
         observer.disconnect();
         window.removeEventListener('scroll', load);
         video.preload = 'auto';
-        video.src = '/brand/joybox-unboxing.mp4';
+        video.src = '/brand/joybox-unboxing.mp4?v=2';
         video.load();
         timeout = setTimeout(() => { if (!trigger) onError(); }, 15000);
       };
       const observer = new IntersectionObserver(entries => {
         near = entries.some(entry => entry.isIntersecting);
         load();
-      }, { rootMargin: '650px 0px' });
+      }, { rootMargin: '1000px 0px' });
 
       video.addEventListener('loadeddata', ready);
-      video.addEventListener('seeked', seekLatest);
+      video.addEventListener('canplay', ready);
+      video.addEventListener('seeked', onSeeked);
       video.addEventListener('error', onError);
       window.addEventListener('scroll', load, { passive: true });
       observer.observe(stage);
@@ -138,11 +157,12 @@ export function HowFilm() {
         observer.disconnect();
         window.removeEventListener('scroll', load);
         clearTimeout(timeout);
-        if (pendingSeek) cancelAnimationFrame(pendingSeek);
+        cancelAnimationFrame(retryFrame);
         trigger?.kill();
         timeline?.revert();
         video.removeEventListener('loadeddata', ready);
-        video.removeEventListener('seeked', seekLatest);
+        video.removeEventListener('canplay', ready);
+        video.removeEventListener('seeked', onSeeked);
         video.removeEventListener('error', onError);
         delete stage.dataset.frame;
         delete stage.dataset.scrub;
@@ -167,7 +187,6 @@ export function HowFilm() {
             </picture>
             <video ref={videoRef} muted playsInline preload="none" aria-hidden="true" />
           </div>
-          <figcaption className="how-film-caption">ბრენდის კონცეპტუალური ვიზუალი</figcaption>
         </figure>
         <ol className="how-film-steps">
           {howSteps.map(({ title, description }, index) => (

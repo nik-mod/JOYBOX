@@ -1,147 +1,145 @@
-.orbital-stage { display: none; }
-
 .edition-showcase {
-  position: relative;
-  scroll-margin-top: -22px;
+  padding-block: clamp(48px, 7vw, 106px);
+  scroll-margin-top: 90px;
 }
 
-.edition-static { padding-top: clamp(40px, 6vw, 96px); }
+.collection-intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 20px 42px;
+  margin-bottom: clamp(24px, 3.6vw, 52px);
+}
 
-@media (min-width: 1040px) and (min-height: 660px) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .orbital-stage {
-    position: absolute;
-    inset: 0 0 auto;
-    display: grid;
-    grid-template-rows: auto minmax(0, 1fr);
-    height: 100svh;
-    padding: 111px 0 25px;
-    overflow: hidden;
-    visibility: hidden;
-    background: #fff6e7;
-  }
+.collection-intro h2 {
+  max-width: 14ch;
+  font-size: clamp(31px, 5.1vw, 75px);
+  line-height: 1.15;
+  letter-spacing: -.036em;
+  text-wrap: balance;
+}
 
-  .edition-showcase[data-orbit='ready'] .edition-static { display: none; }
-  .edition-showcase[data-orbit='ready'] .orbital-stage { position: relative; visibility: visible; }
+.collection-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 22px; }
 
-  .orbital-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    width: calc(100% - 2 * clamp(37px, 5.9vw, 110px));
-    margin: 0 auto;
-    padding-bottom: 9px;
-    border-bottom: 1px solid #10254128;
-  }
+.collection-studio-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 48px;
+  padding: 8px 14px;
+  border: 1px solid #17305242;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--cinema-ink);
+  font-size: 14px;
+  font-weight: 800;
+  transition: background-color .18s ease, border-color .18s ease;
+}
 
-  .orbital-header h2 {
-    font-size: clamp(20px, 2vw, 32px);
-    line-height: 1.25;
-    letter-spacing: -.025em;
-  }
+.collection-studio-toggle:is(:hover, [aria-expanded='true']) {
+  background: #f4e3ca;
+  border-color: #856a49;
+}
 
-  .orbital-header .edition-catalog-link { font-size: 14px; align-self: center; }
+.collection-editions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(16px, 2.4vw, 36px); }
 
-  .orbital-layout {
-    display: grid;
-    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-    align-items: stretch;
-  }
+.collection-edition {
+  background: #f3e5d0;
+  border-radius: 12px;
+  overflow: hidden;
+}
 
-  .orbital-visual { position: relative; min-height: 0; min-width: 0; }
-  .orbital-visual canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.collection-edition[data-color='pink-berry'] { background: #f3dee3; }
 
-  .orbital-copy {
-    display: grid;
-    align-content: center;
-    min-width: 0;
-    padding-right: clamp(37px, 5.9vw, 110px);
-    padding-left: clamp(7px, 1vw, 22px);
-  }
+.collection-edition .edition-image {
+  display: block;
+  aspect-ratio: 3 / 2;
+}
 
-  .orbital-variants {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2px 16px;
-    margin-bottom: clamp(15px, 3svh, 32px);
-  }
+.collection-edition .edition-image:focus-visible { outline-offset: -5px; z-index: 1; }
 
-  .orbital-variants button {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 44px;
-    padding: 4px 1px;
-    color: #38445b;
-    background: transparent;
-    border-bottom: 2px solid transparent;
-    font-size: 12px;
-    font-weight: 800;
-    transition: color .18s, border-color .18s;
-  }
+.collection-edition-copy {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px 14px;
+  align-items: baseline;
+  padding: clamp(17px, 2.5vw, 34px);
+}
 
-  .orbital-variants button:hover, .orbital-variants button[aria-pressed='true'] {
-    color: #102541;
-    border-color: currentColor;
-  }
+.collection-edition-copy h3 {
+  grid-column: 1;
+  font-size: clamp(19px, 2.25vw, 34px);
+  line-height: 1.24;
+  text-wrap: balance;
+}
 
-  .orbital-swatch { width: 12px; height: 12px; flex: 0 0 auto; border-radius: 50%; }
-  .orbital-swatch-navy-yellow { background: #122d56; }
-  .orbital-swatch-pink-berry { background: #ae4368; }
+.collection-edition-copy p {
+  grid-column: 2;
+  grid-row: 1;
+  white-space: nowrap;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
 
-  .orbital-editions { display: grid; }
-  .orbital-edition { grid-area: 1 / 1; align-self: start; visibility: hidden; }
-  .orbital-stage[data-active='0'] .orbital-edition:first-child,
-  .orbital-stage[data-active='1'] .orbital-edition:last-child { visibility: inherit; }
+.collection-edition-copy .edition-action { grid-column: 1 / -1; justify-self: start; }
 
-  .orbital-edition h3 {
-    font-size: clamp(35px, 3.58vw, 68px);
-    line-height: 1.075;
-    letter-spacing: -.035em;
-    overflow-wrap: anywhere;
-  }
+.box-studio {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(245px, 1fr);
+  background: #ecdfc9;
+  color: #142a49;
+  margin-bottom: clamp(21px, 3vw, 44px);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: background-color .35s ease;
+}
 
-  .orbital-edition h3 span { display: block; }
+.box-studio[data-color='pink-berry'] { background: #edd6df; }
+.box-studio-view { position: relative; aspect-ratio: 1.4; }
+.box-studio-view picture { display: contents; }
+.box-studio-view :is(img, canvas, .box-studio-canvas) { position: absolute; inset: 0; width: 100%; height: 100%; }
+.box-studio-view img { object-fit: cover; }
+.box-studio[data-status='ready'] .box-studio-canvas { cursor: grab; touch-action: pan-y pinch-zoom; }
+.box-studio[data-status='ready'] .box-studio-canvas:active { cursor: grabbing; }
+.box-studio-controls { align-self: center; padding: clamp(19px, 4vw, 60px); }
+.box-studio-variants, .box-studio-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+.box-studio-variants { margin-bottom: 15px; }
+.box-studio-controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 11px;
+  border-radius: 4px;
+  border: 1px solid #18294559;
+  color: inherit;
+  background: #fff8ed;
+  font-size: 13px;
+  font-weight: 800;
+}
 
-  .orbital-edition:focus-within :is(h3 span, .edition-description, .edition-price, .edition-action) {
-    clip-path: none !important;
-    transform: none !important;
-    opacity: 1 !important;
-  }
+.box-studio-controls button:hover:enabled { border-color: currentColor; }
+.box-studio-controls button[aria-pressed='true'] { background: #172e50; color: #fff8e9; }
+.box-studio-controls button:disabled { cursor: default; opacity: .68; }
+.edition-swatch { width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 0 1px #fffbf495; }
+.edition-swatch-navy-yellow { background: #1d406f; }
+.edition-swatch-pink-berry { background: #a83a63; }
+.box-studio-note { font-size: 13px; line-height: 1.55; min-height: 3.1em; margin-top: 12px; max-width: 32ch; }
 
-  .orbital-edition .edition-description {
-    max-width: 32ch;
-    margin: clamp(16px, 2.35svh, 27px) 0 13px;
-    color: #344058;
-    font-size: clamp(14px, 1.18vw, 18px);
-    line-height: 1.68;
-  }
+@media (max-width: 790px) {
+  .collection-intro { display: grid; }
+  .box-studio { grid-template-columns: 1fr; }
+  .box-studio-controls { padding-top: 7px; }
+}
 
-  .orbital-edition .edition-price { margin: 0 0 13px; }
+@media (max-width: 560px) {
+  .collection-editions { grid-template-columns: 1fr; }
+  .collection-intro h2 { max-width: 16ch; }
+  .box-studio-view { aspect-ratio: 1.13; }
+}
 
-  .orbital-edition .edition-action {
-    gap: 19px;
-    min-height: 48px;
-    padding: 8px 15px;
-    border-radius: 4px;
-    background: #ffca35;
-    color: #172538;
-    text-decoration: none;
-    font-size: 14px;
-    transition: background .18s;
-  }
-
-  .orbital-edition .edition-action:hover { background: #f1b80f; }
-  .orbital-stage[data-active='1'] .orbital-edition .edition-action { background: #922e54; color: #fff8f2; }
-  .orbital-stage[data-active='1'] .orbital-edition .edition-action:hover { background: #7c2346; }
-
-  .orbital-note {
-    max-width: 38ch;
-    margin-top: clamp(18px, 3.8svh, 42px);
-    color: #504657;
-    font-size: 11px;
-    line-height: 1.6;
-  }
-
-  .orbital-note a { text-decoration: underline; text-underline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .box-studio, .collection-studio-toggle { transition: none; }
 }

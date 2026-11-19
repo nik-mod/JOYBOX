@@ -3,7 +3,7 @@ import Link from 'next/link';
 export function Brand({ large = false }: { large?: boolean }) {
   return (
     <Link href="/" className={`brand ${large ? 'brand-large' : ''}`} aria-label="ჯოიბოქსი — მთავარი">
-      <img src="/brand/joybox-header.webp" alt="" width="384" height="216" />
+      <img src="/brand/joybox-mark.webp" alt="" width={412} height={269} />
     </Link>
   );
 }

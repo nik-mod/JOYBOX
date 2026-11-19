@@ -179,6 +179,44 @@ function paintSet() {
   return model;
 }
 
+function ringStack() {
+  const model = new Group();
+  const wood = painted('#c89258', .53, 0, .13);
+  fittedSurface(model, turned([[0, 0], [.19, 0], [.21, .026], [.21, .056], [.19, .073], [0, .073]]), wood);
+  fittedSurface(model, turned([[0, .06], [.037, .06], [.037, .49], [.027, .52], [0, .525]]), wood);
+  const rings = ['#2d6889', '#719268', '#e2af43', '#b54e36'];
+  rings.forEach((color, index) => {
+    const r = .192 - index * .027;
+    fittedSurface(model, turned([[.045, 0], [r - .021, 0], [r, .022], [r, .055],
+      [r - .02, .076], [.045, .077], [.045, 0]], 28), painted(color, .34), 0, .076 + index * .081);
+  });
+  return model;
+}
+
+function spinningTop(bodyColor: string, bandColor: string) {
+  const model = new Group();
+  fittedSurface(model, turned([[0, 0], [.024, .025], [.056, .066], [.12, .114], [.151, .154],
+    [.161, .192], [.151, .224], [.125, .244], [.038, .254], [0, .254]]), painted(bodyColor, .34));
+  fittedSurface(model, turned([[.153, .15], [.162, .177], [.163, .193], [.159, .20]]), painted(bandColor, .35));
+  fittedSurface(model, turned([[0, .25], [.031, .25], [.029, .312], [.039, .334], [.032, .356], [0, .365]]), painted('#d3a773', .57));
+  return model;
+}
+
+function playCamera(bodyColor: string, lensColor: string) {
+  const model = new Group();
+  const wood = painted('#daa76c', .57, 0, .13);
+  const paint = painted(bodyColor, .36);
+  fittedSurface(model, new RoundedBoxGeometry(.52, .31, .20, 3, .043), wood, 0, .16);
+  fittedSurface(model, new RoundedBoxGeometry(.49, .23, .205, 3, .032), paint, 0, .15);
+  fittedSurface(model, turned([[0, 0], [.115, 0], [.119, .018], [.115, .057], [.094, .069], [0, .069]], 32),
+    painted(lensColor, .28), .041, .15, .107).rotation.x = Math.PI / 2;
+  fittedSurface(model, turned([[0, 0], [.071, 0], [.066, .012], [0, .018]], 28),
+    painted('#233948', .18, .14, .6), .041, .15, .173).rotation.x = Math.PI / 2;
+  fittedSurface(model, new RoundedBoxGeometry(.072, .025, .064, 2, .01), wood, -.153, .32, .017);
+  fittedSurface(model, new RoundedBoxGeometry(.066, .045, .012, 2, .01), painted('#efe0ba', .38), -.166, .217, .107);
+  return model;
+}
+
 type Placement = [object: Object3D, x: number, z: number, yaw: number, height: number, limit: number, base: number];
 
 export function arrangeOrbitalToys(models: Contents, pink: boolean) {
@@ -188,14 +226,18 @@ export function arrangeOrbitalToys(models: Contents, pink: boolean) {
     [models.unicorn, .59, .13, .65, .89, .94, .56],
     [models.blocks.clone(true), -.12, .13, -.18, .48, .66, .55],
     [bracelets(), -.62, .56, -.21, .31, .72, .57],
-    [paintSet(), .41, .46, -.15, .34, .88, .64],
+    [paintSet(), .43, .54, -.15, .34, .83, .64],
+    [spinningTop('#bd6984', '#e8ba65'), .71, -.49, .10, .55, .44, .61],
+    [playCamera('#789d93', '#e5c28c'), -.22, .60, .17, .33, .47, .60],
   ] : [
-    [models.teddy, -.43, -.38, -.12, 1.36, 1.13, .55],
-    [rocket(), .59, -.47, .23, 1.14, .70, .55],
+    [models.teddy, -.53, -.41, -.12, 1.36, 1.08, .55],
+    [rocket(), .70, -.46, .23, 1.14, .66, .55],
     [models.dinosaur, .47, .10, -.35, .60, .96, .55],
     [models.blocks, -.57, .19, .14, .46, .70, .55],
     [puzzleCube(), -.16, .59, -.22, .48, .51, .56],
     [models.car, .61, .61, 1.37, .38, .80, .57],
+    [ringStack(), .16, -.48, 0, .78, .44, .60],
+    [spinningTop('#d79c43', '#3e7195'), .16, .40, -.12, .42, .37, .56],
   ];
   return placements.map(([object, x, z, yaw, targetHeight, limit, raised]) => {
     // A cloned shared model may already have been centered for the other box.

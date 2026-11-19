@@ -24,7 +24,6 @@
 .story-box-navy { position: relative; z-index: 1; }
 .story-box-berry { position: relative; margin: -22% 0 0 auto; z-index: 2; }
 .story-vertical { position: absolute; right: 0; top: 20px; writing-mode: vertical-rl; font-size: 10px; letter-spacing: .18em; color: #ffcf30; }
-.story-packaging-caption { display: block; text-align: right; margin-top: 22px; color: #f7e8cc; font-size: 12px; }
 .story-facts { grid-column: 1/-1; display: grid; grid-template-columns: repeat(3,1fr); border-top: 1px solid #ffffff35; padding: 24px 0; gap: 20px; font-size: 13px; }
 .story-facts b { color: #ffcf30; margin-right: 12px; font-size: 11px; }
 .home-v2 .why-edition { display: grid; grid-template-columns: .9fr 1.2fr; gap: 65px; padding-block: clamp(55px,7vw,105px); }
@@ -116,18 +115,14 @@
 .about-principles p { color:var(--muted); font-size:14px; line-height:1.8; }
 .about-closing { margin-top:60px; display:grid; grid-template-columns:1fr 1fr; align-items:center; background:#f1dce0; }
 .about-closing img { width:100%; height:auto; }
+.model-credits-link { margin-top: 24px; }
 .about-closing > div { padding:35px; }
 .about-closing h2 { font-size:clamp(30px,3.8vw,54px); line-height:1.25; margin:20px 0 30px; }
-.home-v2 .story-edition { background:#f2e3cc; color:#142b4b; }
-.home-v2 .story-edition .story-edition-copy { color:#142b4b; }
-.home-v2 .story-edition .story-edition-copy p { color:#4a5361; font-size:16px; line-height:1.9; max-width:43ch; }
-.home-v2 .story-edition .text-link { color:#142b4b; }
 .home-v2 .story-edition-grid { grid-template-columns:.85fr 1.35fr; gap:45px; }
 .story-packaging { min-height:0; display:grid; grid-template-columns:1fr 1fr; align-items:center; gap:12px; padding:0; }
 .story-box { width:100%; border-radius:0; }
 .story-box-navy { margin:0 0 70px; }
 .story-box-berry { margin:70px 0 0; }
-.story-packaging-caption { grid-column:1/-1; color:#4a5361; border-top:1px solid #142c4925; margin-top:0; padding-top:17px; }
 .story-facts { border-color:#142c4925; padding-block:28px 12px; color:#142b4b; }
 .story-facts b { color:#94601e; }
 .home-v2 .story-edition-copy h2 { font-size:clamp(40px,5vw,70px); }

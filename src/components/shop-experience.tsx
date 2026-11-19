@@ -15,7 +15,7 @@ const sortOptions = [
   { value: 'price-up', label: 'ფასი ზრდადობით' },
   { value: 'price-down', label: 'ფასი კლებადობით' },
 ];
-const reset = { packaging: '', age: '', stock: '', sort: '', q: '' };
+const reset = { packaging: '', age: '', sort: '', q: '' };
 type FilterKey = keyof typeof reset;
 
 function updateQuery(values: Partial<typeof reset>) {
@@ -119,7 +119,6 @@ function ShopMenu({ name, open, label, indicator, onToggle, children }: {
 function Catalog({ products, params }: { products: Product[]; params: Pick<URLSearchParams, 'get'> }) {
   const query = (params.get('q') ?? '').trim().slice(0, 80);
   const packaging = readPackaging(params.get('packaging'));
-  const stock = params.get('stock') === '1';
   const sort = sortOptions.find(option => option.value === params.get('sort')) ?? sortOptions[0];
   const ages = Array.from(new Set(products.map(({ age_label }) => age_label.trim()).filter(Boolean)))
     .sort((a, b) => a.localeCompare(b, 'ka', { numeric: true }));
@@ -157,7 +156,7 @@ function Catalog({ products, params }: { products: Product[]; params: Pick<URLSe
 
   const terms = query.toLocaleLowerCase('ka').split(/\s+/).filter(Boolean);
   const displayed = products.filter(product => {
-    if ((stock && product.stock < 1) || (packaging && product.packaging !== packaging) || (age && product.age_label.trim() !== age)) return false;
+    if ((packaging && product.packaging !== packaging) || (age && product.age_label.trim() !== age)) return false;
     if (!terms.length) return true;
     const searchable = [product.name, product.short_description, ...product.categories].join(' ').toLocaleLowerCase('ka');
     return terms.every(term => searchable.includes(term));
@@ -169,8 +168,7 @@ function Catalog({ products, params }: { products: Product[]; params: Pick<URLSe
   if (query) chips.push({ key: 'q', label: `„${query}“` });
   if (packaging) chips.push({ key: 'packaging', label: packagingDesigns[packaging].title });
   if (age) chips.push({ key: 'age', label: age });
-  if (stock) chips.push({ key: 'stock', label: 'მხოლოდ მარაგში' });
-  const facetCount = Number(Boolean(packaging)) + Number(Boolean(age)) + Number(stock);
+  const facetCount = Number(Boolean(packaging)) + Number(Boolean(age));
   const clear = () => {
     setDraft('');
     updateQuery(reset);
@@ -213,10 +211,6 @@ function Catalog({ products, params }: { products: Product[]; params: Pick<URLSe
               <input type="radio" name="shop-age" checked={option === age} onChange={() => updateQuery({ age: option })} /> {option}
             </label>)}
           </fieldset>}
-          <fieldset>
-            <legend>ხელმისაწვდომობა</legend>
-            <label className="shop-option"><input type="checkbox" checked={stock} onChange={event => updateQuery({ stock: event.target.checked ? '1' : '' })} /> მხოლოდ მარაგში</label>
-          </fieldset>
         </ShopMenu>
         <ShopMenu name="sort" open={openMenu === 'sort'} label={sort.value ? sort.label : 'დალაგება'}
           onToggle={() => setOpenMenu(openMenu === 'sort' ? null : 'sort')}>

@@ -39,10 +39,14 @@ export async function saveProduct(form:FormData){
   revalidatePath('/','layout');redirect('/admin/products?state=saved');
 }
 export async function archiveProduct(form:FormData){
-  const {client}=await requireAdmin();const id=z.uuid().safeParse(form.get('id'));
-  if(!id.success)redirect('/admin/products?state=invalid');
-  const {error}=await client.from('products').update({published:false}).eq('id',id.data);
+  const {client}=await requireAdmin();
+  const id=z.uuid().safeParse(form.get('id'));
+  const version=z.iso.datetime({offset:true}).safeParse(form.get('updated_at'));
+  if(!id.success || !version.success)redirect('/admin/products?state=invalid');
+  const {data,error}=await client.from('products').update({published:false})
+    .eq('id',id.data).eq('updated_at',version.data).eq('published',true).select('id').maybeSingle();
   if(error)redirect('/admin/products?state=error');
+  if(!data)redirect('/admin/products?state=stale');
   revalidatePath('/','layout');redirect('/admin/products?state=saved');
 }
 export async function uploadImage(form:FormData){
