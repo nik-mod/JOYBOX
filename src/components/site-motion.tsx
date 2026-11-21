@@ -1,13 +1,26 @@
 'use client';
 import { usePathname } from 'next/navigation';
+import { useRef } from 'react';
 import { allowMotion, gsap, ScrollTrigger, useGSAP, wideMotion } from './motion';
 
 /** Never transform a pin ancestor: it changes fixed-position geometry. */
 export function SiteMotion() {
   const pathname = usePathname();
+  const previousPathname = useRef(pathname);
+  const transition = useRef<HTMLDivElement>(null);
   useGSAP(() => {
+    const navigated = previousPathname.current !== pathname;
+    previousPathname.current = pathname;
     const main = document.querySelector('main');
     if (!main || pathname.startsWith('/admin')) return;
+
+    // Reveal the committed route without delaying navigation or transforming its pinned sections.
+    if (navigated && transition.current && window.matchMedia(allowMotion).matches) {
+      gsap.fromTo(transition.current, { autoAlpha: .56 }, {
+        autoAlpha: 0, duration: .42, ease: 'power2.out', clearProps: 'opacity,visibility',
+      });
+    }
+
     const media = gsap.matchMedia();
     media.add(allowMotion, () => {
       const title = main.querySelector('.commerce-heading h1, .page-header h1, .about-lead h1, .product-copy h1');
@@ -84,5 +97,5 @@ export function SiteMotion() {
       media.revert();
     };
   }, { dependencies: [pathname], revertOnUpdate: true });
-  return null;
+  return <div ref={transition} className="page-transition" aria-hidden="true" />;
 }

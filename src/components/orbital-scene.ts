@@ -9,7 +9,6 @@ import { arrangeOrbitalToys, disposeToyModels, loadOrbitalToys } from './orbital
 
 export type OrbitalPose = {
   angle: number;
-  turn: number;
   camera: number;
   blush: number;
   navyLid: number;
@@ -77,7 +76,7 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
   try {
     const loadArtwork = Promise.all(['navy', 'berry'].map(async color => {
       const [front, side, right, back, lid] = await Promise.all(['front', 'side', 'right', 'back', 'lid'].map(async face => {
-        const texture = await images.loadAsync(`/brand/orbit-${color}-${face}.webp`);
+        const texture = await images.loadAsync(`/brand/mywonderbox/orbit-${color}-${face}.webp`);
         if (signal.aborted || released) {
           texture.dispose();
           throw new Error('Showcase cancelled');
@@ -160,6 +159,7 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
     let request = 0;
     let framing = 1;
     let disposed = false;
+    const inspection = { x: 0, y: 0 };
 
     function render() {
       request = 0;
@@ -169,7 +169,8 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
       const travel = Math.max(0, parallax);
       const extraWidth = Math.max(1, 1.185 / camera.aspect) / framing - 1;
       const dolly = pose.camera + .22 * travel + extraWidth * travel ** .65;
-      camera.position.set(.09 + .26 * parallax, 3.43 * framing * dolly, 7.45 * framing * dolly);
+      camera.position.set(.09 + .26 * parallax + inspection.x * .48,
+        3.43 * framing * dolly + inspection.y * .18, 7.45 * framing * dolly);
       camera.lookAt(.015 - .18 * parallax, .77, 0);
       key.color.copy(warmLight).lerp(pinkLight, pose.blush);
       hemisphere.groundColor.copy(warmGround).lerp(pinkGround, pose.blush);
@@ -181,7 +182,7 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
         const side = Math.sin(angle);
         const opening = index === 0 ? pose.navyLid : pose.pinkLid;
         box.root.position.set(side * 1.65 - near * .62, 0, near * 1.57 + side * .16);
-        box.root.rotation.y = .41 - side * .16 - near * .08 + (pose.camera - 1) * .84 - opening * .12 + pose.turn;
+        box.root.rotation.y = .41 - side * .16 - near * .08 + (pose.camera - 1) * .84 - opening * .12;
         box.lid.rotation.x = -2.18 * opening;
 
         const revealed = index === 0 ? pose.navyToys : pose.pinkToys;
@@ -235,8 +236,13 @@ export async function mountOrbitalScene(host: HTMLElement, signal: AbortSignal, 
     size();
 
     return {
+      inspect(x: number, y: number) {
+        inspection.x = x;
+        inspection.y = y;
+        queueRender();
+      },
       draw(next: OrbitalPose, immediately = false) {
-        if (!immediately && pose && pose.turn === next.turn && pose.angle === next.angle && pose.camera === next.camera
+        if (!immediately && pose && pose.angle === next.angle && pose.camera === next.camera
           && pose.blush === next.blush && pose.navyLid === next.navyLid && pose.navyToys === next.navyToys
           && pose.pinkLid === next.pinkLid && pose.pinkToys === next.pinkToys) return;
         pose = { ...next };

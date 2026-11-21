@@ -1,9 +1,15 @@
 import type { NextConfig } from 'next';
+import { packagingDesigns } from './src/lib/packaging';
 const config: NextConfig = {
   poweredByHeader: false,
   devIndicators: false,
   experimental: { serverActions: { bodySizeLimit: '6mb' } },
   images: { remotePatterns: [{ protocol: 'https', hostname: '**.supabase.co' }] },
+  async redirects() {
+    return Object.values(packagingDesigns).map(({ storedSlug, slug }) => ({
+      source: `/shop/${storedSlug}`, destination: `/shop/${slug}`, permanent: true,
+    }));
+  },
   async headers() {
     return [
       { source: '/:path*', headers: [

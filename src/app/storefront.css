@@ -1,13 +1,4 @@
-.site-header .header-inner {
-  width: min(88%, 1440px);
-}
-
-.site-header .desktop-nav { gap: clamp(16px, 2.7vw, 42px); }
-.site-header .desktop-nav a { font-size: clamp(12px, 1.02vw, 15px); }
-.site-header .desktop-nav a::after { height: 2px; }
 .site-header .cart-link { min-width: 44px; min-height: 44px; }
-.site-header .brand { width: 161px; height: 85px; }
-.site-header .mobile-menu .brand { min-height: 44px; }
 
 .site-footer {
   background: #08182a;
@@ -99,6 +90,8 @@
 .commerce-flow .cart-total > p { color: #f6ecdc; font-size: 13px; }
 .commerce-flow .summary-row { border-color: #fff5e448; }
 .commerce-flow .summary-row span { overflow-wrap: anywhere; }
+.checkout-summary-item { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.checkout-summary-item img { width: 48px; height: 36px; flex-shrink: 0; object-fit: contain; border-radius: 4px; }
 .commerce-flow .cart-total a.text-link { color: #ffc92a; }
 .commerce-flow .cart-total .button, .commerce-flow .checkout-form > .button { border-radius: 5px; }
 .commerce-flow .checkout-form { padding: 0; }
@@ -107,8 +100,7 @@
 .commerce-flow .quantity-control button, .product-edition .quantity-control button { min-width: 44px; min-height: 44px; }
 
 @media (max-width: 850px) {
-  .site-header .header-inner { width: calc(100% - 34px); }
-  .site-header .brand { width: 147px; height: 78px; }
+
   .site-footer .footer-edition { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .site-footer .footer-brand { grid-column: 1 / -1; }
 }
@@ -128,11 +120,7 @@ button, a, summary { text-underline-offset: .22em; }
 .button { transition: background-color var(--control-time), color var(--control-time), transform var(--control-time) var(--motion-ease); }
 .button:disabled:hover { transform: none; }
 .button:active:not(:disabled) { transform: translateY(0) scale(.985); }
-.mobile-menu { overflow-y: auto; padding: 20px 7%; }
-.mobile-menu nav a { font-size: clamp(20px,5vw,28px); padding-block: 22px; }
-.mobile-menu nav a[aria-current='page'] { color: var(--yellow); }
-.mobile-menu-help { display: flex; flex-wrap: wrap; gap: 12px 30px; padding-top: 20px; font-size: 14px; }
-.mobile-menu-help a { min-height: 44px; display: flex; align-items: center; }
+
 .site-footer .footer-brand p { max-width: 26ch; font-size: 14px; color: #d0d7df; margin-top: 12px; }
 .site-footer .footer-links a { min-height: 34px; align-items: center; }
 .site-footer .footer-links a:focus-visible { color: var(--yellow); }

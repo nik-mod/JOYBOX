@@ -1,13 +1,12 @@
 import Link from 'next/link';
 import { ArrowUpRight, Mail } from 'lucide-react';
 import { ContactPhone } from '@/components/contact-phone';
-import { PackagingPhoto } from '@/components/packaging-photo';
 import { getSettings } from '@/lib/catalog';
 import { storefrontMetadata } from '@/lib/metadata';
 import { ordersOpeningLater } from '@/lib/preview-copy';
 import '@/components/editorial-pages.css';
 
-export const metadata = storefrontMetadata('/contact', 'კონტაქტი', 'დაგვიკავშირდი ჯოიბოქსის ყუთების, კატალოგისა და დაგეგმილი მიწოდების შესახებ.');
+export const metadata = storefrontMetadata('/contact', 'კონტაქტი', 'დაგვიკავშირდი MyWonderBox-ის ყუთების, კატალოგისა და დაგეგმილი მიწოდების შესახებ.');
 
 export default async function ContactPage() {
   const { contact_email } = await getSettings();
@@ -21,7 +20,13 @@ export default async function ContactPage() {
           <Mail size={19} aria-hidden="true" /> {contact_email}
         </a>}
       </header>
-      <div className="contact-still"><PackagingPhoto color="pink-berry" loading="eager" /></div>
+      <div className="contact-still contact-paired-photo">
+        <picture>
+          <source media="(max-width: 740px)" srcSet="/brand/mywonderbox/duo-compact.webp" />
+          <img src="/brand/mywonderbox/duo.webp" width={1774} height={887} fetchPriority="high" decoding="async"
+            alt="MyWonderBox-ის ლურჯი და ვარდისფერი სიურპრიზის ყუთები გვერდიგვერდ" />
+        </picture>
+      </div>
     </div>
     <div className="contact-guide-body">
       <section aria-labelledby="contact-ordering">

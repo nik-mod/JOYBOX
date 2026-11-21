@@ -14,10 +14,6 @@ export function useHomeMotion(root: RefObject<HTMLElement | null>) {
       });
     });
     media.add(wideMotion, () => {
-      gsap.fromTo('.story-photo img', { yPercent: 3 }, {
-        yPercent: -3, ease: 'none',
-        scrollTrigger: { trigger: '.story-photo', start: 'top bottom', end: 'bottom top', scrub: .65 },
-      });
       gsap.fromTo('.why-edition', { '--section-reveal': 0 }, { '--section-reveal': 1, ease: 'none',
         scrollTrigger: { trigger: '.why-edition', start: 'top 85%', end: 'top 35%', scrub: .5 },
       });

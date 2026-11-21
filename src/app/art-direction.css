@@ -1,12 +1,12 @@
 @font-face {
-  font-family: 'Joybox Serif';
+  font-family: 'Noto Serif Georgian';
   src: url('/fonts/noto-serif-georgian-semibold.woff2') format('woff2');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
   unicode-range: U+0589, U+10A0-10FF, U+1C90-1CBF, U+205A, U+2D00-2D2F, U+2E31;
 }
-:root { --berry: #87344f; --blush: #f2dde0; --honey: #f5c435; --editorial: 'Joybox Serif', 'Noto Georgian', serif; }
+:root { --berry: #87344f; --blush: #f2dde0; --honey: #f5c435; --editorial: 'Noto Serif Georgian', 'Noto Georgian', serif; }
 h1, h2, h3 { text-wrap: balance; }
 .home-v2 .hero-title { font-size: clamp(38px,4.3vw,78px); line-height: 1.19; }
 .home-v2 .hero-title-line:last-child { font-family: var(--editorial); font-weight: 600; letter-spacing: -.025em; }

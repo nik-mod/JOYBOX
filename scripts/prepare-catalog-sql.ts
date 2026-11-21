@@ -11,7 +11,9 @@ if (counts.some(value => !value || !/^\d+$/.test(value) || Number(value) > 10000
 }
 const quote = (value: string) => "'" + value.replaceAll("'", "''") + "'";
 const rows = launchProducts.map((product, index) => {
-  const record = { ...product, stock: Number(counts[index]), sort_order: index, image_url: new URL(product.image_url, site).href };
+  const record = { ...product, stock: Number(counts[index]), sort_order: index,
+    image_url: new URL(product.image_url, site).href,
+    images: product.images.map(image => new URL(image, site).href) };
   return `${quote(JSON.stringify(record))}::jsonb`;
 });
 const sql = `-- Owner-approved catalog. Existing rows and inventory are preserved.\nbegin;\ninsert into public.products (id,slug,name,description,short_description,price_minor,age_label,image_url,images,categories,dimensions,safety_info,stock,published,packaging,sort_order)\nselect p.id,p.slug,p.name,p.description,p.short_description,p.price_minor,p.age_label,p.image_url,p.images,p.categories,p.dimensions,p.safety_info,p.stock,p.published,p.packaging,p.sort_order\nfrom (values\n${rows.map(row => `(${row})`).join(',\n')}\n) as source(data)\ncross join lateral jsonb_populate_record(null::public.products,source.data) p\non conflict (slug) do nothing;\ncommit;\n`;

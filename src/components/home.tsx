@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import { useRef } from 'react';
-import { ArrowDown, ArrowRight, ArrowUpRight, PackageCheck, Gift, Truck } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, PackageCheck, Gift, Truck } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { HowFilm } from './how-film';
 import { PackagingShowcase } from './packaging-showcase';
+import { StoryPlayroom } from './story-playroom';
 import { useHomeMotion } from './home-motion';
 import { ordersOpeningLater, plannedDelivery } from '@/lib/preview-copy';
 import './home-cinema.css';
@@ -35,10 +36,10 @@ export function Home({ products }: { products: Product[] }) {
               <span className="hero-title-line"><span className="hero-title-reveal">პატარა ყუთი.</span></span>{' '}
               <span className="hero-title-line"><span className="hero-title-reveal">დიდი <em>სიხარული.</em></span></span>
             </h1>
-            <p>სიურპრიზის ყუთები ბავშვებისთვის, სათამაშოებით, თამაშებითა და შემოქმედებითი აღმოჩენებით.</p>
+            <p>აღმოაჩინე სიურპრიზებით სავსე <strong lang="en">MyWonderBox</strong> — პატარა თავგადასავალი ყოველ ყუთში.</p>
             <div className="hero-action">
               <Link className="button button-yellow" href="/shop">ყუთების დათვალიერება <ArrowRight size={22} /></Link>
-              <Link className="hero-chapter-link" href="/how-it-works"><ArrowDown size={16} aria-hidden="true" /> როგორ მუშაობს?</Link>
+              <Link className="hero-chapter-link" href="/how-it-works"><ArrowUpRight size={16} aria-hidden="true" /> როგორ მუშაობს?</Link>
             </div>
           </div>
         </div>
@@ -50,22 +51,10 @@ export function Home({ products }: { products: Product[] }) {
 
       <PackagingShowcase products={products} />
 
-      <section className="brand-story story-edition" id="unboxing">
-        <div className="container story-edition-grid">
-          <div className="story-edition-copy">
-            <h2>პირველი აღმოჩენა.<br /><em>პირველი თამაში.</em></h2>
-            <p>ყუთის გახსნა მხოლოდ დასაწყისია. მერე ერთად არჩევთ, რით ითამაშოთ და რას შექმნით.</p>
-            <Link href="/about" className="text-link">ჯოიბოქსის შესახებ <ArrowUpRight size={19} /></Link>
-          </div>
-          <div className="story-photo">
-            <img src="/brand/joybox-unboxing-open.webp" width={1280} height={720}
-              alt="გახსნილი ლურჯ-ყვითელი ჯოიბოქსი" loading="lazy" decoding="async" />
-          </div>
-        </div>
-      </section>
+      <StoryPlayroom />
 
-      <section className="why-section why-edition container" aria-labelledby="why-joybox">
-        <div className="section-heading"><Gift size={46} strokeWidth={1.25} aria-hidden="true" /><h2 id="why-joybox">რატომ ჯოიბოქსი?</h2><p>საჩუქარი, რომლის აღმოჩენაც თამაშად იქცევა.</p><span className="why-age">4–10 <small>წლის ბავშვებისთვის</small></span></div>
+      <section className="why-section why-edition container" aria-labelledby="why-mywonderbox">
+        <div className="section-heading"><Gift size={46} strokeWidth={1.25} aria-hidden="true" /><h2 id="why-mywonderbox">რატომ ჩემი ვანდერბოქსი?</h2><p>საჩუქარი, რომლის აღმოჩენაც თამაშად იქცევა.</p><span className="why-age">4–10 <small>წლის ბავშვებისთვის</small></span></div>
         <ul>
           <li><PackageCheck /><div><h3>ასაკისთვის შესაფერისი არჩევანი</h3><p>რეკომენდებული ასაკი და უსაფრთხოების ინფორმაცია თითოეული ყუთის გვერდზეა.</p><Link href="/shop" className="benefit-link">შეარჩიე ყუთი <ArrowUpRight size={18}/></Link></div></li>
           <li><Gift /><div><h3>სიურპრიზი საჩუქრად</h3><p>შეარჩიე გაფორმებული ყუთი. შიგთავსი გახსნამდე სიურპრიზად რჩება.</p><Link href="/faq" className="benefit-link">გაიგე მეტი შიგთავსზე <ArrowUpRight size={18}/></Link></div></li>
@@ -79,7 +68,7 @@ export function Home({ products }: { products: Product[] }) {
           <Link href="/faq" className="text-link">ყველა კითხვა <ArrowRight size={19} /></Link>
         </div>
         <div className="faq-list">
-          <details><summary>რა არის ჯოიბოქსი?</summary><p>ჯოიბოქსი არის სიურპრიზის ყუთი ბავშვებისთვის, სათამაშოებით, თამაშებითა და შემოქმედებითი ნივთებით.</p></details>
+          <details><summary>რა არის MyWonderBox?</summary><p>ჩემი ვანდერბოქსი ბავშვებისთვის განკუთვნილი სიურპრიზის ყუთია, რომელშიც სათამაშოები, თამაშები და შემოქმედებითი ნივთები დაგხვდება.</p></details>
           <details><summary>წინასწარ მეცოდინება, რა არის ყუთში?</summary><p>ზუსტი შიგთავსი სიურპრიზად რჩება. ყუთის აღწერაში ნახავ ნივთების კატეგორიებს, ასაკობრივ რეკომენდაციასა და უსაფრთხოების ინფორმაციას.</p></details>
           <details><summary>როდის შევძლებ შეკვეთას?</summary><p>{ordersOpeningLater}</p></details>
         </div>
@@ -87,9 +76,12 @@ export function Home({ products }: { products: Product[] }) {
 
       <section className="home-final final-edition">
         <div className="container final-composition">
-          <div><h2>პატარა ყუთი.<br /><em>დიდი სიხარული.</em></h2>
-          <Link className="button button-yellow" href="/shop">ჯოიბოქსის ყუთები <ArrowRight size={20} /></Link></div>
-          <img src="/brand/joybox-mark.webp" className="final-brand-art" width={412} height={269} alt="" loading="lazy" />
+          <div><h2>შენი სიურპრიზი<br /><em>აქ იწყება.</em></h2>
+          <Link className="button button-yellow" href="/shop">შეარჩიე ყუთი <ArrowRight size={20} aria-hidden="true" /></Link></div>
+          <img src="/brand/mywonderbox/duo.webp" className="final-brand-art" width={1774} height={887}
+            srcSet="/brand/mywonderbox/duo-compact.webp 720w, /brand/mywonderbox/duo.webp 1774w"
+            sizes="(max-width: 630px) 90vw, (max-width: 1500px) 52vw, 720px"
+            alt="MyWonderBox-ის ლურჯი და ვარდისფერი სიურპრიზის ყუთები" loading="lazy" decoding="async" />
         </div>
       </section>
     </main>

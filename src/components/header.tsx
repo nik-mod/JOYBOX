@@ -1,10 +1,11 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Menu, Phone, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Brand } from './brand';
 import { gsap, useGSAP } from './motion';
+import './header.css';
 const links = [['/', 'მთავარი'], ['/shop', 'ყუთები'], ['/how-it-works', 'როგორ მუშაობს?'], ['/about', 'ჩვენ შესახებ']];
 export function Header() {
   const path = usePathname(); const dialog = useRef<HTMLDialogElement>(null); const [scrolled, setScrolled] = useState(false);
@@ -41,19 +42,21 @@ export function Header() {
           <Brand />
           <nav className="desktop-nav" aria-label="მთავარი ნავიგაცია">
             {links.map(([href, label]) => (
-              <Link href={href} key={href} className={isCurrent(href) ? 'active' : ''}
+              <Link href={href} key={href}
                 aria-current={isCurrent(href) ? 'page' : undefined}>{label}</Link>
             ))}
           </nav>
           <div className="header-actions">
             <Link href="/contact" className="header-contact" aria-current={isCurrent('/contact') ? 'page' : undefined}>
-              კონტაქტი <ArrowUpRight size={15} aria-hidden="true" />
+              <Phone size={15} aria-hidden="true" /> კონტაქტი
             </Link>
             <button className="icon-button menu-toggle" type="button" aria-label="მენიუს გახსნა"
-              aria-controls="mobile-navigation" aria-expanded={menuOpen} onClick={() => {
+              aria-controls="mobile-navigation" aria-expanded={menuOpen} onClick={event => {
+                // WebKit does not always focus a button activated with a pointer.
+                event.currentTarget.focus({ preventScroll: true });
                 dialog.current?.showModal();
                 setMenuOpen(true);
-              }}><Menu /></button>
+              }}><Menu size={20} aria-hidden="true" /></button>
           </div>
         </div>
       </header>
@@ -61,17 +64,21 @@ export function Header() {
         onCancel={event => { event.preventDefault(); closeMenu(); }}
         onClose={() => setMenuOpen(false)}>
         <div className="mobile-menu-top">
-          <Brand />
+          <Brand onHomeNavigate={() => dialog.current?.close()} />
           <button className="icon-button" type="button" aria-label="მენიუს დახურვა"
-            onClick={closeMenu}><X /></button>
+            onClick={closeMenu}><X size={20} aria-hidden="true" /></button>
         </div>
         <nav aria-label="მობილური ნავიგაცია">
           {links.map(([href, label]) => (
             <Link key={href} href={href} aria-current={isCurrent(href) ? 'page' : undefined}
-              onClick={() => dialog.current?.close()}>{label}<ArrowUpRight size={23} /></Link>
+              onClick={() => dialog.current?.close()}>{label}<ArrowUpRight size={19} aria-hidden="true" /></Link>
           ))}
         </nav>
-        <div className="mobile-menu-help"><Link href="/faq" onClick={() => dialog.current?.close()}>კითხვები და პასუხები</Link><Link href="/contact" onClick={() => dialog.current?.close()}>კონტაქტი</Link></div>
+        <div className="mobile-menu-help">
+          <Link className="mobile-menu-faq" href="/faq" onClick={() => dialog.current?.close()}>კითხვები და პასუხები</Link>
+          <Link className="header-contact" href="/contact" aria-current={isCurrent('/contact') ? 'page' : undefined}
+            onClick={() => dialog.current?.close()}><Phone size={15} aria-hidden="true" /> კონტაქტი</Link>
+        </div>
       </dialog>
     </>
   );

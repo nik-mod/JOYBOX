@@ -3,17 +3,17 @@ import { ArrowUpRight } from 'lucide-react';
 import { FAQExplorer, type FAQ } from '@/components/faq-explorer';
 import { PackagingPhoto } from '@/components/packaging-photo';
 import { storefrontMetadata } from '@/lib/metadata';
-import { ordersOpeningLater, plannedDelivery } from '@/lib/preview-copy';
+import { ordersOpeningLater, plannedDelivery, previewReturnsStatus } from '@/lib/preview-copy';
 import '@/components/editorial-pages.css';
 
-export const metadata = storefrontMetadata('/faq', 'ხშირად დასმული კითხვები', 'პასუხები ჯოიბოქსის ყუთების შიგთავსის, ასაკის, შეკვეთისა და მიწოდების შესახებ.');
+export const metadata = storefrontMetadata('/faq', 'ხშირად დასმული კითხვები', 'პასუხები MyWonderBox-ის ყუთების შიგთავსის, ასაკის, შეკვეთისა და მიწოდების შესახებ.');
 
 const questions: FAQ[] = [
   {
     id: 'faq-joybox',
     topic: 'boxes',
-    question: 'რა არის ჯოიბოქსი?',
-    answer: 'ჯოიბოქსი ბავშვებისთვის განკუთვნილი სიურპრიზის ყუთია. მასში სათამაშოების, თამაშებისა და შემოქმედებითი ნივთების შერჩეული კომბინაცია დაგხვდება.',
+    question: 'რა არის ჩემი ვანდერბოქსი?',
+    answer: 'ჩემი ვანდერბოქსი ბავშვებისთვის განკუთვნილი სიურპრიზის ყუთია. მასში სათამაშოების, თამაშებისა და შემოქმედებითი ნივთების შერჩეული კომბინაცია დაგხვდება.',
   },
   {
     id: 'faq-contents',
@@ -45,7 +45,7 @@ const questions: FAQ[] = [
     id: 'faq-returns',
     topic: 'ordering',
     question: 'როგორია დაბრუნების პირობები?',
-    answer: 'დაბრუნების დამტკიცებული პირობები გამოქვეყნდება შესაბამის გვერდზე შეკვეთების მიღების დაწყებამდე.',
+    answer: previewReturnsStatus,
   },
 ];
 
@@ -54,7 +54,7 @@ export default function FAQPage() {
     <main className="page-shell container faq-page-edition" id="main">
       <header className="page-header">
         <h1>რაც გაინტერესებს.</h1>
-        <p>ყველაფერი, რაც ჯოიბოქსის გახსნამდე უნდა იცოდე.</p>
+        <p>ყველაფერი, რაც შენი სიურპრიზის ყუთის გახსნამდე უნდა იცოდე.</p>
         <Link className="faq-product-link" href="/shop">
           <PackagingPhoto color="navy-yellow" />
           <span>გაიცანი ყუთები <ArrowUpRight size={19} aria-hidden="true" /></span>

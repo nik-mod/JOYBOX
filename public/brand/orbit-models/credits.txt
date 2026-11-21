@@ -1,4 +1,4 @@
-JOYBOX — Orbital showcase model credits
+MyWonderBox — Orbital showcase model credits
 
 Teddy bear and Plush rabbit by Innerscene, CC0 1.0.
 https://www.innerscene.com/tools/library/3d-parts/teddy-bear-8cc03913
@@ -23,6 +23,6 @@ https://huggingface.co/datasets/codepawl/scanned-objects-glb
 
 CC0 1.0 — https://creativecommons.org/publicdomain/zero/1.0/
 
-The carton geometry, puzzle cube, rocket, bracelets, and paint set were made for JOYBOX. The toys shown are conceptual illustrations.
+The carton geometry, puzzle cube, rocket, bracelets, and paint set are original to this storefront. The toys shown are conceptual illustrations.
 
-Quality revision: teddy-scan.glb (Lovable Huggable Cuddly Boutique Teddy Bear Beige) and unicorn-hq.glb use the dataset engine GLBs with 2048px textures and original packed geometry. Teddy orientation adjusted for presentation. Source: https://huggingface.co/datasets/codepawl/scanned-objects-glb . Google Research, CC BY 4.0. The doll and ladybug are no longer displayed.
+Quality revision: teddy-scan.glb (Lovable Huggable Cuddly Boutique Teddy Bear Beige) and unicorn-hq.glb use the dataset engine GLBs with 2048px textures. The teddy uses Meshopt compression and quantized geometry attributes with the original texture and triangle count. Teddy orientation adjusted for presentation. Source: https://huggingface.co/datasets/codepawl/scanned-objects-glb . Google Research, CC BY 4.0. The doll and ladybug are no longer displayed.

@@ -84,7 +84,7 @@ function PackagingPreview({ color }: { color: Packaging }) {
             <PreviewInfo title="შეფუთვის შესახებ">
               <dl><dt>ზომა</dt><dd>22 × 20 × 9 სმ</dd><dt>მასალა</dt><dd>მუყაო</dd></dl>
             </PreviewInfo>
-            <PreviewInfo title="როგორ მუშაობს ჯოიბოქსი?">
+            <PreviewInfo title="როგორ მუშაობს MyWonderBox?">
               <p>აირჩიე ყუთი ასაკისა და ინტერესების მიხედვით. ზუსტი შიგთავსი გახსნამდე სიურპრიზად რჩება.</p>
               <Link href="/how-it-works" className="shop-inline-link">გაიგე მეტი <ArrowUpRight size={16} aria-hidden="true" /></Link>
             </PreviewInfo>

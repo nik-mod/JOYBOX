@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useRef, useState } from 'react';
 import { ArrowDown, ArrowRight, ArrowUpRight } from 'lucide-react';
 import { ordersOpeningLater, plannedDelivery } from '@/lib/preview-copy';
+import { JourneyGlints, JourneyToys } from './journey-toys';
 import { allowMotion, gsap, ScrollTrigger, useGSAP } from './motion';
 import './how-journey.css';
 
@@ -13,14 +14,14 @@ const chapters = [
 ];
 const cuts = [.28, .47];
 const fps = 24;
-// Source: closed to ~3s; opening 4–6s; toy emergence ~6.5s.
-// The last 6% of the scroll holds the completed reveal.
+// The boxes stay closed during selection and delivery, then open during the longer reveal.
+// The last 6% of the scroll holds the final frame.
+const filmAnchors = [[0, 0], [cuts[0], .083], [cuts[1], .16], [.94, 1], [1, 1]];
 function filmTime(progress: number, duration: number) {
   const p = Math.max(0, Math.min(1, progress));
   const end = Math.max(0, duration - 1 / fps);
-  const anchors = [[0, 0], [.28, .175], [.47, .295], [.94, 1], [1, 1]];
-  for (let i = 1; i < anchors.length; i++) {
-    const [to, value] = anchors[i], [from, prior] = anchors[i - 1];
+  for (let i = 1; i < filmAnchors.length; i++) {
+    const [to, value] = filmAnchors[i], [from, prior] = filmAnchors[i - 1];
     if (p <= to) return (prior + (value - prior) * (p - from) / (to - from)) * end;
   }
   return end;
@@ -54,7 +55,6 @@ export function HowJourney() {
           .from('.journey-title-ink', { yPercent: 105, duration: .9, stagger: .12, clearProps: 'transform' }, .05)
           .from('.journey-intro-foot', { y: 12, opacity: 0, duration: .6, clearProps: 'transform,opacity' }, .4);
       }
-      gsap.to('.journey-intro-title', { y: -26, ease: 'none', scrollTrigger: { trigger: '.journey-intro', start: 'top top', end: 'bottom top', scrub: .4 } });
       gsap.from('.journey-end h2', { y: 32, opacity: .5, duration: .8, ease: 'power3.out', clearProps: 'transform,opacity', scrollTrigger: { trigger: '.journey-end', start: 'top 85%', once: true } });
       const seekLatest = () => {
         if (!ready || disposed || failed || video.seeking || raf) return;
@@ -98,6 +98,8 @@ export function HowJourney() {
           end: () => '+=' + Math.round(window.innerHeight * (window.innerWidth < 700 ? 2.1 : 2.5)),
           pin: true, scrub: .38, invalidateOnRefresh: true, anticipatePin: 1,
         });
+        // The timeline is already populated. Establish the pin before exposing the ready state.
+        trigger.refresh();
         triggerRef.current = trigger;
       });
       function fallback(reason: 'still' | 'error') {
@@ -141,16 +143,26 @@ export function HowJourney() {
       video.addEventListener('canplay', onReady);
       video.addEventListener('seeked', seeked);
       video.addEventListener('error', onError);
-      const observer = new IntersectionObserver(entries => {
-        if (!entries.some(entry => entry.isIntersecting) || failed || disposed) return;
+      let nearFilm = false;
+      let requested = false;
+      const loadFilm = () => {
+        if (!nearFilm || requested || failed || disposed || window.scrollY <= 24) return;
+        requested = true;
         observer.disconnect();
-        video.src = window.innerWidth <= 850 ? '/brand/how-journey-mobile.mp4' : '/brand/how-journey.mp4';
+        window.removeEventListener('scroll', loadFilm);
+        video.src = window.innerWidth <= 850 ? '/brand/mywonderbox/how-journey-mobile.mp4' : '/brand/mywonderbox/how-journey.mp4';
         video.load();
         timer = setTimeout(() => { if (!ready) fallback('error'); }, 15000);
+      };
+      const observer = new IntersectionObserver(([entry]) => {
+        nearFilm = entry.isIntersecting;
+        loadFilm();
       }, { rootMargin: '420px 0px' });
       observer.observe(stage);
+      window.addEventListener('scroll', loadFilm, { passive: true });
       return () => {
         disposed = true; observer.disconnect();
+        window.removeEventListener('scroll', loadFilm);
         if (timer) clearTimeout(timer);
         clearTimeout(seekDeadline);
         if (raf) cancelAnimationFrame(raf);
@@ -172,13 +184,20 @@ export function HowJourney() {
   };
   return <main id="main" ref={root} className="how-journey" data-mode={mode}>
     <section className="journey-intro">
-      <h1 className="journey-intro-title"><span><span className="journey-title-ink">როგორ მუშაობს</span></span>{' '}<span><span className="journey-title-ink">ჯოიბოქსი?</span></span></h1>
-      <div className="journey-intro-foot"><p>შენ ირჩევ ყუთს.<br />სიურპრიზი შიგნით გელოდება.</p>
-        <a href="#journey-film" className="journey-begin">დაიწყე აღმოჩენა <ArrowDown size={20} aria-hidden="true" /></a>
+      <JourneyGlints scene="intro" />
+      <div className="journey-intro-inner">
+        <div className="journey-intro-copy">
+          <h1 className="journey-intro-title"><span><span className="journey-title-ink">როგორ მუშაობს</span></span>{' '}<span lang="en"><span className="journey-title-ink">MyWonderBox?</span></span></h1>
+          <div className="journey-intro-foot"><p>შენ ირჩევ ყუთს.<br />სიურპრიზი შიგნით გელოდება.</p>
+            <a href="#journey-film" className="button button-yellow journey-begin">დაიწყე აღმოჩენა <ArrowDown size={20} aria-hidden="true" /></a>
+          </div>
+        </div>
+        <JourneyToys scene="intro" />
       </div>
     </section>
-    <section className="journey-film" id="journey-film" aria-label="ჯოიბოქსის აღმოჩენის სამი ეტაპი">
+    <section className="journey-film" id="journey-film" aria-label="MyWonderBox-ის აღმოჩენის სამი ეტაპი">
       <div className="journey-stage">
+        <JourneyGlints scene="film" />
         <div className="journey-stage-top"><a href="#journey-end">ყუთებზე გადასვლა <ArrowUpRight size={15} aria-hidden="true" /></a></div>
         <div className="journey-composition">
           <ol className="journey-chapters">
@@ -189,14 +208,16 @@ export function HowJourney() {
           </ol>
           <figure className="journey-screen">
             <div className="journey-picture">
-              <picture><source media="(prefers-reduced-motion: reduce)" srcSet="/brand/how-journey-reveal.webp" />
-                <img src={mode === 'still' || mode === 'error' ? '/brand/how-journey-reveal.webp' : '/brand/how-journey-poster.webp'}
-                  width={1920} height={1080} alt="ჯოიბოქსის ორი ბრენდირებული ყუთი — კონცეპტუალური გახსნის სცენა" fetchPriority="high" />
+              <picture>
+                <source media="(max-width: 850px)" srcSet="/brand/mywonderbox/how-journey-poster-compact.webp" />
+                <img src="/brand/mywonderbox/how-journey-poster.webp" width={1280} height={720}
+                  alt="MyWonderBox-ის ლურჯ-ყვითელი და ვარდისფერი სიურპრიზის ყუთები" loading="lazy" decoding="async" />
               </picture>
               <video ref={videoRef} muted playsInline preload="none" aria-hidden="true" disablePictureInPicture />
             </div>
           </figure>
         </div>
+        <JourneyToys scene="film" />
         <div className="journey-stage-bottom">
           <nav className="journey-milestones" aria-label="აირჩიე აღმოჩენის ეტაპი">
             <div className="journey-progress-track" aria-hidden="true"><span className="journey-progress-fill" /></div>
@@ -204,16 +225,20 @@ export function HowJourney() {
               <span>0{index + 1}</span><span>{label}</span>
             </button>)}
           </nav>
-          <span className="journey-scroll-note" role="status">{mode === 'error' ? 'ვიდეო ვერ ჩაიტვირთა. წაიკითხე ნაბიჯები ზემოთ.' : mode === 'ready' ? 'გახსენი სქროლით' : ''}</span>
+          <span className="journey-scroll-note" role="status">{mode === 'error' ? 'ვიდეო ვერ ჩაიტვირთა. წაიკითხე ნაბიჯები ზემოთ.' : mode === 'ready' ? 'ჩამოსქროლე შემდეგი ეტაპისთვის' : ''}</span>
         </div>
       </div>
     </section>
     <section className="journey-end" id="journey-end">
-      <h2>მზად ხარ <em>სიურპრიზისთვის?</em></h2>
-      <div className="journey-end-actions">
+      <div className="journey-end-inner">
+        <JourneyGlints scene="end" />
+        <h2>მზად ხარ <em>სიურპრიზისთვის?</em></h2>
         <p>{ordersOpeningLater}</p>
-        <Link className="button button-yellow" href="/shop">აღმოაჩინე ყუთები <ArrowRight size={21} aria-hidden="true" /></Link>
-        <Link className="text-link" href="/faq">კითხვები და პასუხები <ArrowUpRight size={16} aria-hidden="true" /></Link>
+        <div className="journey-end-actions">
+          <Link className="button button-yellow" href="/shop">აღმოაჩინე ყუთები <ArrowRight size={21} aria-hidden="true" /></Link>
+          <Link className="text-link" href="/faq">კითხვები და პასუხები <ArrowUpRight size={16} aria-hidden="true" /></Link>
+        </div>
+        <JourneyToys scene="end" />
       </div>
     </section>
   </main>;

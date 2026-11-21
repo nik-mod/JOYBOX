@@ -10,11 +10,11 @@ export async function Footer() {
     <FooterMotion>
       <div className="footer-edition container">
         <div className="footer-brand"><Brand large /><p>სიურპრიზის ყუთები ბავშვებისთვის.</p></div>
-        <nav className="footer-links" aria-label="ჯოიბოქსის შესახებ">
+        <nav className="footer-links" aria-label="აღმოაჩინე MyWonderBox">
           <h3>აღმოაჩინე</h3>
           <Link href="/shop">ჩვენი ყუთები</Link>
           <Link href="/how-it-works">როგორ მუშაობს?</Link>
-          <Link href="/about">ჯოიბოქსის შესახებ</Link>
+          <Link href="/about">ჩვენ შესახებ</Link>
         </nav>
         <nav className="footer-links" aria-label="დახმარება">
           <h3>დაგეხმარებით</h3>
@@ -27,7 +27,7 @@ export async function Footer() {
         </nav>
       </div>
       <div className="footer-bottom container">
-        <span>© {new Date().getFullYear()} JOYBOX</span>
+        <span>© {new Date().getFullYear()} MyWonderBox</span>
         <span className="footer-legal">
           <Link href="/privacy">კონფიდენციალურობა</Link>
           <Link href="/terms">წესები და პირობები</Link>

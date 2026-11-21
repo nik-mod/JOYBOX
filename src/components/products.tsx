@@ -4,7 +4,7 @@ import { useRef, useState } from 'react';
 import { ArrowRight, Maximize2, Package, X } from 'lucide-react';
 import type { Product } from '@/lib/types';
 import { formatMoney } from '@/lib/money';
-import { packagingDesigns } from '@/lib/packaging';
+import { packagingDesigns, productHref } from '@/lib/packaging';
 import { BoxMark } from './brand';
 import { PackagingPhoto } from './packaging-photo';
 import { allowMotion, editorialEase, gsap, ScrollTrigger, useGSAP, wideMotion } from './motion';
@@ -50,7 +50,7 @@ export function ProductGrid({ products }: { products: Product[] }) {
     <div className="product-grid" ref={grid}>
       {products.map((product, index) => (
         <article className="product-item" key={product.id} data-packaging={product.packaging || undefined}>
-          <Link href={`/shop/${product.slug}`} className="product-image" aria-label={product.name}>
+          <Link href={productHref(product.slug)} className="product-image" aria-label={product.name}>
             {product.image_url ? (
               <span className="product-image-media">
                 {product.packaging && product.image_url === packagingDesigns[product.packaging].image
@@ -60,13 +60,13 @@ export function ProductGrid({ products }: { products: Product[] }) {
             ) : <BoxMark />}
           </Link>
           <div className="product-card-copy">
-            <h3><Link href={`/shop/${product.slug}`}>{product.name.replace(/^ჯოიბოქსი\s*—\s*/, '')}</Link></h3>
+            <h3><Link href={productHref(product.slug)}>{product.name}</Link></h3>
             <div className="product-meta">
               <span>{product.age_label || 'ასაკი იხილე აღწერაში'}</span>
               <span className="product-price">{formatMoney(product.price_minor)}</span>
             </div>
             <PackagingLabel packaging={product.packaging} />
-            <Link className="button button-outline" href={`/shop/${product.slug}`}>
+            <Link className="button button-outline" href={productHref(product.slug)}>
               გაიცანი ყუთი <ArrowRight size={17} aria-hidden="true" />
             </Link>
           </div>
@@ -88,6 +88,9 @@ export function ProductGallery({ product }: { product: Product }) {
   const [inspecting, setInspecting] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const selected = images.includes(selection) ? selection : images[0];
+  const design = product.packaging ? packagingDesigns[product.packaging] : undefined;
+  const isDetail = selected === design?.detail;
+  const officialPhoto = product.packaging && (selected === design?.image || isDetail);
   useGSAP(() => {
     if (!inspecting || !window.matchMedia(allowMotion).matches) return;
     gsap.from('.product-photo-dialog-body', {
@@ -102,8 +105,8 @@ export function ProductGallery({ product }: { product: Product }) {
           dialog.current?.showModal();
           setInspecting(true);
         }}>
-          {product.packaging && selected === packagingDesigns[product.packaging].image
-            ? <PackagingPhoto color={product.packaging} loading="eager" />
+          {officialPhoto && product.packaging
+            ? <PackagingPhoto color={product.packaging} loading="eager" detail={isDetail} />
             : <img key={selected} src={selected} alt={product.name} width="900" height="600" decoding="async" />}
           <span className="product-photo-zoom-icon"><Maximize2 size={20} aria-hidden="true" /></span>
         </button>
@@ -113,7 +116,8 @@ export function ProductGallery({ product }: { product: Product }) {
           {images.map((image, index) => (
             <button type="button" key={image} className={selected === image ? 'selected' : ''}
               aria-label={`ფოტო ${index + 1}`} aria-pressed={selected === image} onClick={() => setSelection(image)}>
-              <img src={image} alt="" width="75" height="75" />
+              <img src={image === design?.image ? design.compact : image === design?.detail ? design.detailCompact : image}
+                alt="" width="75" height="75" decoding="async" />
             </button>
           ))}
         </div>
@@ -125,7 +129,7 @@ export function ProductGallery({ product }: { product: Product }) {
         <div className="product-photo-dialog-body">
           <button className="product-photo-close" type="button" aria-label="ფოტოს დახურვა" autoFocus
             onClick={() => dialog.current?.close()}><X size={24} aria-hidden="true" /></button>
-          {inspecting && selected && <img src={selected} alt={product.name} decoding="async" />}
+          {inspecting && selected && <img src={selected} alt={officialPhoto && design ? design.alt : product.name} decoding="async" />}
         </div>
       </dialog>
     </div>

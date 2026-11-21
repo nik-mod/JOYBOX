@@ -5,8 +5,10 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Minus, Plus, ShoppingBag, X } from 'lucide-react';
 import { formatMoney } from '@/lib/money';
+import { productHref } from '@/lib/packaging';
 import { useCart } from './cart-context';
 import { BoxMark } from './brand';
+import { ProductThumbnail } from './packaging-photo';
 
 export function CartDrawer() {
   const { lines, count, ready, update, remove } = useCart();
@@ -34,10 +36,10 @@ export function CartDrawer() {
             </div>
           ) : <ul>{lines.map(({ product, quantity }) => (
             <li className="drawer-line" key={product.id}>
-              <Link href={`/shop/${product.slug}`} onClick={close} aria-label={product.name}>
-                {product.image_url ? <img src={product.image_url} alt="" width={100} height={72} /> : <BoxMark />}
+              <Link href={productHref(product.slug)} onClick={close} aria-label={product.name}>
+                {product.image_url ? <ProductThumbnail product={product} decorative /> : <BoxMark />}
               </Link>
-              <div><Link href={`/shop/${product.slug}`} onClick={close}>{product.name}</Link>
+              <div><Link href={productHref(product.slug)} onClick={close}>{product.name}</Link>
                 <strong>{formatMoney(product.price_minor * quantity)}</strong>
                 <div className="drawer-line-actions">
                   <div className="quantity-control">

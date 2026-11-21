@@ -27,15 +27,20 @@
 .about-edition .edition-preview-photo picture { display: block; }
 .about-edition .edition-preview-photo img { display: block; width: 100%; }
 .about-edition .edition-preview-tabs button { font-size: 13px; }
-.about-edition .edition-preview-tabs button:hover { color: #87344f; }
+.about-edition .edition-preview-tabs button:hover { color: #a11d63; }
 .about-edition .edition-preview-caption { margin-bottom: 2px; }
 .about-edition .about-principles article:first-child { padding-inline-start: 24px; }
 .about-edition .about-closing {
   border-radius: 14px;
   isolation: isolate;
 }
-.about-edition .about-closing picture { display: block; }
-.about-edition .about-closing img { aspect-ratio: 3 / 2; object-fit: cover; }
+.about-edition .about-closing .about-paired-photo {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  background: #10203b;
+}
+.about-edition .about-paired-photo img { aspect-ratio: 1536 / 645; object-fit: contain; }
 .about-edition .model-credits-link { min-height: 44px; }
 
 .faq-page-edition > .page-header {
@@ -84,7 +89,7 @@
 .faq-page-edition .faq-help a { align-items: center; min-height: 44px; }
 
 .contact-guide .contact-lead {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
   border-radius: 14px;
   overflow: hidden;
   align-items: stretch;
@@ -101,9 +106,12 @@
   overflow-wrap: normal;
 }
 .contact-guide .contact-still { width: 100%; max-width: none; align-self: stretch; }
-.contact-guide .contact-still picture,
-.contact-guide .contact-still img { height: 100%; }
-.contact-guide .contact-still img { object-fit: cover; }
+.contact-guide .contact-paired-photo {
+  display: grid;
+  place-items: center;
+  background: #e5d4cb;
+}
+.contact-guide .contact-paired-photo :is(picture, img) { width: 100%; height: auto; }
 .contact-phone-actions {
   display: grid;
   grid-template-columns: auto 46px;
@@ -215,7 +223,6 @@
   .about-edition .about-lead-copy p { margin-block: 14px; }
   .about-edition .about-principles article:first-child { padding-inline-start: 12px; }
   .contact-guide .contact-lead { grid-template-columns: 1fr; }
-  .contact-guide .contact-still img { aspect-ratio: 3 / 2; }
   .contact-guide .contact-lead .page-header { padding-bottom: 18px; }
   .information-reading .information-layout { gap: 24px; padding-block: 25px 12px; }
   .information-reading .information-aside nav {

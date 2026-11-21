@@ -16,6 +16,7 @@ const records = launchProducts.map((product, index) => ({
   stock: Number(stock[index]),
   sort_order: index,
   image_url: new URL(product.image_url, site).href,
+  images: product.images.map(image => new URL(image, site).href),
 }));
 // Preserve an existing catalog, including inventory edited in the admin.
 const { error } = await client.from('products').upsert(records, { onConflict: 'slug', ignoreDuplicates: true });

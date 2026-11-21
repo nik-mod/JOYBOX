@@ -53,8 +53,8 @@
   border-radius: 50%;
   background: linear-gradient(120deg, var(--swatch-base) 54%, var(--swatch-accent) 55%);
 }
-.shop-swatch--navy-yellow { --swatch-base: #152746; --swatch-accent: #ffc920; }
-.shop-swatch--pink-berry { --swatch-base: #d86c89; --swatch-accent: #882651; }
+.shop-swatch--navy-yellow { --swatch-base: #082044; --swatch-accent: #ffc322; }
+.shop-swatch--pink-berry { --swatch-base: #f5a7c9; --swatch-accent: #bc0d58; }
 .shop-color-picker button[aria-pressed='true'] .shop-swatch { border-color: #fffaf080; }
 
 .shop-preview-stage {
@@ -243,7 +243,7 @@
 .shop-editions .product-item {
   --edition-surface: #f7efdf;
   --edition-edge: #ddd1bc;
-  --edition-ink: #1e3556;
+  --edition-ink: #082044;
   display: flex;
   flex-direction: column;
   border: 0;
@@ -253,9 +253,9 @@
   box-shadow: 0 15px 35px #34261910;
 }
 .shop-editions .product-item[data-packaging='pink-berry'] {
-  --edition-surface: #f8ebed;
-  --edition-edge: #e8ccd4;
-  --edition-ink: #792744;
+  --edition-surface: #faeaf1;
+  --edition-edge: #eac6d6;
+  --edition-ink: #7d1f4b;
 }
 .shop-editions .product-item .product-image {
   margin-bottom: 0;
@@ -318,6 +318,21 @@
 }
 .product-edition .product-essential-facts { gap: 14px 24px; margin-top: 19px; }
 .product-edition .product-essential-facts .packaging-label { font-size: inherit; margin-bottom: 0; }
+.product-content-categories { flex-basis: 100%; }
+.product-preview-caption { margin: 10px 0 0; font-size: 13px; color: #526078; }
+.product-copy .product-safety-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 16px 0 0;
+  padding: 12px 14px;
+  border-inline-start: 2px solid #ba7d24;
+  background: #faf0dd;
+  color: #493517;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.product-safety-note svg { margin-top: 2px; }
 .product-launch-note {
   display: grid;
   gap: 13px;
@@ -343,8 +358,11 @@
   width: 100%;
   padding: 0;
   border-radius: 14px;
+  background: #fff;
   cursor: zoom-in;
 }
+.product-edition .product-thumbs button { aspect-ratio: 1; overflow: hidden; background: #fff; }
+.product-edition .product-thumbs img { width: 100%; height: 100%; object-fit: contain; }
 .product-edition .product-photo-zoom picture,
 .product-edition .product-photo-zoom img { display: block; }
 .product-photo-zoom-icon {
@@ -374,7 +392,7 @@
   border: 0;
   border-radius: 14px;
   overflow: auto;
-  background: #f4e5d3;
+  background: #fff;
   color: #102541;
 }
 .product-photo-dialog::backdrop { background: #08182ae6; }

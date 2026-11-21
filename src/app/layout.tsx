@@ -2,13 +2,28 @@ import type { Metadata, Viewport } from 'next';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { SiteMotion } from '@/components/site-motion';
+import { brandName, siteDescription, siteTitle, siteUrl, storefrontMetadata } from '@/lib/metadata';
 import './globals.css';
 import './storefront.css';
 import './refinements.css';
 import './art-direction.css';
 import './studio.css';
-export const metadata: Metadata = { metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'), title: { default: 'ჯოიბოქსი — პატარა ყუთი, დიდი სიხარული', template: '%s | JOYBOX' }, description: 'აღმოაჩინე ჯოიბოქსი — სათამაშოებით, თამაშებითა და შემოქმედებითი აღმოჩენებით სავსე სიურპრიზის ყუთები ბავშვებისთვის.', icons: { icon: [{ url: '/favicon.ico' }, { url: '/favicon.svg', type: 'image/svg+xml' }], apple: '/apple-touch-icon.png' }, manifest: '/site.webmanifest', openGraph: { title: 'ჯოიბოქსი — პატარა ყუთი, დიდი სიხარული', description: 'სიურპრიზი, რომელიც ღიმილით იწყება.', locale: 'ka_GE', type: 'website', images: [{ url: '/opengraph-image.png', width: 1200, height: 630 }] }, twitter: { card: 'summary_large_image', images: ['/opengraph-image.png'] } };
-export const viewport: Viewport = { themeColor: '#102D57' };
+const iconRevision = 'wonder-carton';
+export const metadata: Metadata = {
+  ...storefrontMetadata(undefined, siteTitle, siteDescription),
+  metadataBase: siteUrl ?? new URL('http://localhost:3000'),
+  title: { default: siteTitle, template: `%s | ${brandName}` },
+  applicationName: brandName,
+  icons: {
+    icon: [
+      { url: `/favicon.ico?v=${iconRevision}` },
+      { url: `/favicon.svg?v=${iconRevision}`, type: 'image/svg+xml', sizes: 'any' },
+    ],
+    apple: { url: `/apple-touch-icon.png?v=${iconRevision}`, sizes: '180x180' },
+  },
+  manifest: '/site.webmanifest',
+};
+export const viewport: Viewport = { themeColor: '#082044' };
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ka" data-scroll-behavior="smooth">

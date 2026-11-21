@@ -10,12 +10,12 @@ const frameRate = 24;
 
 const stepCuts = [.3, .6] as const;
 
-// Times are measured in the 5.5s studio edit. The lid starts rising after 3.25s.
+// The supplied clip starts with a slow push, then rotates and opens the box.
 const beats = [
-  { progress: stepCuts[0], time: 1.92 },
-  { progress: stepCuts[1], time: 3.25 },
-  { progress: .95, time: 5.5 },
-  { progress: 1, time: 5.5 },
+  { progress: .12, time: 2.75 },
+  { progress: stepCuts[0], time: 3.86 },
+  { progress: stepCuts[1], time: 5.38 },
+  { progress: .91, time: 7.7 },
 ];
 const openMask = 'inset(0% 0% 0% 0%)';
 
@@ -28,6 +28,15 @@ export function HowFilm() {
     const video = videoRef.current;
     if (!stage || !video) return;
     const media = gsap.matchMedia(stage);
+    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+    let anchorFrame = 0;
+    if (window.location.hash === '#how' && navigation?.type !== 'back_forward') {
+      anchorFrame = requestAnimationFrame(() => {
+        if (window.location.hash === '#how' && stage.getBoundingClientRect().top > 160) {
+          stage.closest('.how-chapter')?.scrollIntoView({ behavior: 'instant' });
+        }
+      });
+    }
 
     media.add(cinema, context => {
       if ((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData) return;
@@ -82,7 +91,7 @@ export function HowFilm() {
         timeline.set(rows[0], { clipPath: openMask }, 0);
         timeline.set(rows.slice(1), { clipPath: 'inset(100% 0% 0% 0%)', y: 14 }, 0);
         let previous = 0;
-        for (const { progress, time } of beats) {
+        for (const { progress, time } of [...beats, { progress: 1, time: lastFrame / frameRate }]) {
           timeline.to(playhead, { frame: Math.min(time * frameRate, lastFrame), duration: progress - previous }, previous);
           previous = progress;
         }
@@ -92,8 +101,8 @@ export function HowFilm() {
         }
 
         // A late network response must not pin a scene the visitor has already entered.
-        const hasSectionAnchor = ['#how', '#collection', '#unboxing'].includes(window.location.hash);
-        const canPin = !hasSectionAnchor && stage.getBoundingClientRect().top > 24;
+        const linkedPast = ['#collection', '#unboxing'].includes(window.location.hash);
+        const canPin = !linkedPast && stage.getBoundingClientRect().top > -36;
         stage.dataset.scrub = canPin ? 'pinned' : 'inline';
         stage.dataset.beat = '1';
         trigger = ScrollTrigger.create({
@@ -137,7 +146,7 @@ export function HowFilm() {
         observer.disconnect();
         window.removeEventListener('scroll', load);
         video.preload = 'auto';
-        video.src = '/brand/joybox-unboxing.mp4?v=2';
+        video.src = '/brand/mywonderbox/home-unboxing.mp4';
         video.load();
         timeout = setTimeout(() => { if (!trigger) onError(); }, 15000);
       };
@@ -171,7 +180,10 @@ export function HowFilm() {
         video.load();
       };
     });
-    return () => media.revert();
+    return () => {
+      cancelAnimationFrame(anchorFrame);
+      media.revert();
+    };
   }, { scope: stageRef });
 
   return (
@@ -181,9 +193,9 @@ export function HowFilm() {
         <figure className="how-film-visual">
           <div className="how-film-plate">
             <picture>
-              <source media={motionStill} srcSet="/brand/joybox-unboxing-open.webp" />
-              <img src="/brand/joybox-unboxing-start.webp" width={1280} height={720} loading="lazy"
-                alt="ლურჯ-ყვითელი ჯოიბოქსის ყუთი კრემისფერ ფონზე" />
+              <source media={motionStill} srcSet="/brand/mywonderbox/home-unboxing-poster-compact.webp" />
+              <img src="/brand/mywonderbox/home-unboxing-poster.webp" width={1280} height={720} loading="lazy"
+                alt="ვარდისფერი MyWonderBox-ის სიურპრიზის ყუთი" />
             </picture>
             <video ref={videoRef} muted playsInline preload="none" aria-hidden="true" />
           </div>

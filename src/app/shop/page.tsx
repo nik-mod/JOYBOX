@@ -9,7 +9,7 @@ import { ordersOpeningLater } from '@/lib/preview-copy';
 import './shop.css';
 
 export const metadata = storefrontMetadata(
-  '/shop', 'სიურპრიზის ყუთები', 'დაათვალიერე ჯოიბოქსის კოლექცია და გაეცანი ფასებს, შეფუთვის ფერებსა და რეკომენდებულ ასაკს.',
+  '/shop', 'სიურპრიზის ყუთები', 'დაათვალიერე MyWonderBox-ის კოლექცია და გაეცანი ფასებს, შეფუთვის ფერებსა და რეკომენდებულ ასაკს.',
 );
 async function ShopCatalog() {
   await connection();

@@ -9,7 +9,7 @@ export const bearMotion = '(min-width: 320px) and (min-height: 600px) and (max-a
 
 function poseAtStart() {
   return { x: 1090, y: 415, tilt: 0, squash: 1, wallShadow: 0,
-    left: 38, right: -43, elbowLeft: 0, elbowRight: -5, grip: 0,
+    left: 38, right: -43, elbowLeft: 0, elbowRight: -5, wristRight: 0, grip: 0,
     braceLeft: 1, braceRight: 1, step: 0, leadExtension: 0, tuck: .18, plant: 0, seat: 0, shadow: 0 };
 }
 
@@ -17,6 +17,11 @@ const restingPaws = [{ x: 1020, y: 487 }, { x: 1248, y: 468 }];
 const pawsOnRim = [{ x: 1010, y: 506 }, { x: 1237, y: 490 }];
 const feetOnRug = [{ x: 1148, y: 851 }, { x: 1254, y: 854 }];
 const seatOnRug = { x: 1198, y: 848 };
+
+function smoothRange(value: number, start: number, end: number) {
+  const fraction = gsap.utils.clamp(0, 1, (value - start) / (end - start));
+  return fraction * fraction * (3 - 2 * fraction);
+}
 
 function pawPosition(index: number, grip: number) {
   const rest = restingPaws[index];
@@ -49,6 +54,7 @@ function drawArm(
   const x = 76 * side;
   const angle = side === -1 ? p.left : p.right;
   const bend = side === -1 ? p.elbowLeft : p.elbowRight;
+  const wrist = side === 1 ? p.wristRight : 0;
   const brace = side === -1 ? p.braceLeft : p.braceRight;
   const paw = pawPosition(side === -1 ? 0 : 1, p.grip);
   ctx.save();
@@ -66,11 +72,12 @@ function drawArm(
   let px = startX;
   let py = startY;
   const rows = 28;
-  const length = 166;
+  const length = 166 - p.seat * 22;
   for (let row = 0; row < rows; row++) {
     const part = row / rows;
-    const elbow = gsap.utils.clamp(0, 1, (part - .31) / .38);
-    const turn = (angle + bend * elbow * elbow * (3 - 2 * elbow)) * radians;
+    const elbow = smoothRange(part, .31, .69);
+    const palm = smoothRange(part, .72, .96);
+    const turn = (angle + bend * elbow + wrist * palm) * radians;
     const sy = image.height * part;
     const sourceHeight = Math.min(image.height - sy, image.height / rows + 15);
     const rest = 1 - part;
@@ -84,7 +91,8 @@ function drawArm(
     ctx.translate(gsap.utils.interpolate(px, bendX, brace), gsap.utils.interpolate(py, bendY, brace));
     ctx.rotate(Math.atan2(-gsap.utils.interpolate(vx, tangentX, brace), gsap.utils.interpolate(vy, tangentY, brace)));
     const stripLength = gsap.utils.interpolate(length, Math.hypot(tangentX, tangentY), brace);
-    ctx.drawImage(image, 0, sy, image.width, sourceHeight, -42, 0, 84, stripLength * sourceHeight / image.height);
+    const width = 84 - Math.abs(wrist) * palm * .56;
+    ctx.drawImage(image, 0, sy, image.width, sourceHeight, -width / 2, 0, width, stripLength * sourceHeight / image.height);
     ctx.restore();
     px += vx / rows;
     py += vy / rows;
@@ -123,74 +131,70 @@ function legPose(p: ReturnType<typeof poseAtStart>, side: -1 | 1) {
   });
   const lift = gsap.utils.clamp(0, 1, (p.tuck - .18) / .82);
   const reach = side === -1 ? p.leadExtension : 0;
-  const hip = toScene(side * (51 + p.tuck * 14), 137 - p.tuck * 71 - p.seat * 38);
-  const hanging = toScene(side * (53 + p.tuck * 26), 246 - p.tuck * 102 + side * p.step * 27);
+  const isLead = side === -1;
+  const hip = toScene(side * (47 + p.tuck * 9), 131 - p.tuck * 52 - p.seat * 36);
+  const hanging = toScene(side * (53 + p.tuck * 20), 246 - p.tuck * 91 + side * p.step * 33);
   const reaching = {
-    x: p.x + side * (52 + p.tuck * 10) - p.step * 10 - reach * 10,
-    y: p.y + (243 - p.tuck * 87) * p.squash + side * p.step * 24 + reach * 39,
+    x: p.x + side * (49 + p.tuck * 9) - p.step * 9 - reach * 17,
+    y: p.y + (243 - p.tuck * 93) * p.squash + side * p.step * 33 + reach * 24,
   };
-  const rug = feetOnRug[side === -1 ? 0 : 1];
+  const rug = feetOnRug[isLead ? 0 : 1];
+  const contact = isLead ? smoothRange(p.plant, 0, .7) : smoothRange(p.plant, .22, 1);
   const toe = {
-    x: gsap.utils.interpolate(gsap.utils.interpolate(hanging.x, reaching.x, lift), rug.x, p.plant),
-    y: gsap.utils.interpolate(gsap.utils.interpolate(hanging.y, reaching.y, lift), rug.y, p.plant),
+    x: gsap.utils.interpolate(gsap.utils.interpolate(hanging.x, reaching.x, lift), rug.x, contact),
+    y: Math.min(rug.y, gsap.utils.interpolate(gsap.utils.interpolate(hanging.y, reaching.y, lift), rug.y, contact)),
   };
   const height = toe.y - hip.y;
-  const toeDepth = Math.min(height * .65, 35 - p.plant * 17 + p.seat * 31 + lift * 13 - reach * 21);
   return {
-    hip, toe, height, toeDepth, lift,
-    curve: side * (lift * 16 + p.seat * 12 + 3),
-    width: 83 + p.tuck * 6 + p.seat * 5,
-    front: p.seat,
+    hip, toe, height, contact, rug,
+    toeDepth: Math.min(height * .68, 34 - contact * 2 + p.seat * 19 + lift * 8 - reach * 7),
+    toeFur: .52 + contact * .28 - p.seat * .32 - lift * (isLead ? .08 : .015),
+    curve: side * (lift * 9 + p.seat * 8 + 4),
+    width: 81 + p.tuck * 4 + p.seat * 9 - contact * 4,
+    front: Math.max(p.seat, lift * (isLead ? .92 : .42)),
   };
 }
 
-function drawLeg(
-  ctx: CanvasRenderingContext2D, image: HTMLImageElement, leg: ReturnType<typeof legPose>, foreground: boolean,
-) {
-  const { hip, toe, height, toeDepth, curve, width, front } = leg;
-  if (height <= 0 || (foreground && front <= 0)) return;
-  const ankleX = gsap.utils.interpolate(hip.x, toe.x, .55) + curve;
+function drawLeg(ctx: CanvasRenderingContext2D, image: HTMLImageElement, leg: ReturnType<typeof legPose>) {
+  const { hip, toe, height, toeDepth, toeFur, curve, width } = leg;
+  if (height <= 0) return;
+  const ankleX = gsap.utils.interpolate(hip.x, toe.x, .73) + curve;
   const ankleY = toe.y - toeDepth;
-  ctx.save();
-  if (foreground) {
-    // The foot turns toward the viewer while tucking or sitting. Let the
-    // rounded forefoot come in front of the belly while the hip stays behind.
-    ctx.globalAlpha = front;
-    ctx.beginPath();
-    ctx.ellipse(ankleX, toe.y - toeDepth * .4, width * .62, toeDepth * 1.16, 0, 0, 2 * Math.PI);
-    ctx.clip();
-  }
-  // Stretch the plush above the foot. Compressing the sole area rolls it down
-  // onto the rug, even when the hip moves during the wave or the sit.
   const soleStart = Math.round(image.height * .55);
+  const padStart = Math.round(image.height * .70);
   const draw = (sy: number, sourceHeight: number, x: number, y: number, dx: number, span: number) => {
     ctx.save();
     ctx.transform(1, 0, dx / span, 1, x - width / 2, y);
     ctx.drawImage(image, 0, sy, image.width, sourceHeight, 0, 0, width, span);
     ctx.restore();
   };
-  const upperScale = (ankleY - hip.y) / soleStart;
-  // Overlap a few source rows where the shin and foot meet to keep fur
-  // continuous at fractional pixel positions.
-  draw(0, soleStart + 4, hip.x, hip.y,
-    (ankleX - hip.x) * (soleStart + 4) / soleStart, ankleY - hip.y + 4 * upperScale);
-  draw(soleStart, image.height - soleStart, ankleX, ankleY, toe.x - ankleX, toeDepth);
-  ctx.restore();
+  const overlap = 3;
+  const upperSpan = ankleY - hip.y;
+  const upperRatio = (soleStart + overlap) / soleStart;
+  draw(0, soleStart + overlap, hip.x, hip.y, (ankleX - hip.x) * upperRatio, upperSpan * upperRatio);
+
+  // Roll the pad under the plush toe on contact. Only the lower foot changes
+  // perspective, so the heel keeps its volume and the fur stays connected.
+  const toeSplit = toeDepth * toeFur;
+  const padX = gsap.utils.interpolate(ankleX, toe.x, toeFur);
+  const furRatio = (padStart - soleStart + overlap) / (padStart - soleStart);
+  draw(soleStart, padStart - soleStart + overlap, ankleX, ankleY, (padX - ankleX) * furRatio, toeSplit * furRatio);
+  draw(padStart, image.height - padStart, padX, ankleY + toeSplit, toe.x - padX, toeDepth - toeSplit);
 }
 
-function drawLiftedLeg(
+function drawForwardKnee(
   ctx: CanvasRenderingContext2D, layer: CanvasRenderingContext2D, image: HTMLImageElement,
   leg: ReturnType<typeof legPose>,
 ) {
-  const { hip, toe, lift, height, width } = leg;
-  if (lift <= 0 || height <= 0) return;
+  const { hip, toe, front, height, width } = leg;
+  if (front <= 0 || height <= 0) return;
   const x = Math.floor(Math.min(hip.x, toe.x) - width / 2 - 24);
   const y = Math.floor(hip.y);
   const density = layer.canvas.width / legLayerSize;
   layer.setTransform(1, 0, 0, 1, 0, 0);
   layer.clearRect(0, 0, layer.canvas.width, layer.canvas.height);
   layer.setTransform(density, 0, 0, density, -x * density, -y * density);
-  drawLeg(layer, image, leg, false);
+  drawLeg(layer, image, leg);
 
   // The entire knee and paw come forward together. Feather the upper joint
   // into the belly, where the leg turns away, and keep the toe edge defined.
@@ -204,7 +208,7 @@ function drawLiftedLeg(
   layer.restore();
 
   ctx.save();
-  ctx.globalAlpha = lift;
+  ctx.globalAlpha = front;
   ctx.drawImage(layer.canvas, x, y, legLayerSize, legLayerSize);
   ctx.restore();
 }
@@ -244,6 +248,8 @@ function paintBear(
   ctx: CanvasRenderingContext2D, actor: CanvasRenderingContext2D, art: Art,
   p: ReturnType<typeof poseAtStart>, legLayer: CanvasRenderingContext2D,
 ) {
+  const leftLeg = legPose(p, -1);
+  const rightLeg = legPose(p, 1);
   ctx.clearRect(crop.x, crop.y, crop.width, crop.height);
   ctx.drawImage(art['box-interior'], 907, 202, 452, 321);
 
@@ -279,10 +285,8 @@ function paintBear(
     ctx.fillRect(-radius, -radius, radius * 2, radius * 2);
     ctx.restore();
   }
-  if (p.plant > .001) {
-    for (const foot of feetOnRug) {
-      drawRugContact(ctx, foot.x - 3, foot.y, 44, 10, p.plant * .57);
-    }
+  for (const leg of [leftLeg, rightLeg]) {
+    if (leg.contact > .001) drawRugContact(ctx, leg.rug.x - 3, leg.rug.y, 44, 10, leg.contact * .57);
   }
   const seatPressure = gsap.utils.clamp(0, 1, (p.seat - .58) / .42);
   if (seatPressure > 0) {
@@ -308,24 +312,20 @@ function paintBear(
 
   actor.save();
   if (behindRim) clipInterior(actor);
-  const leftLeg = legPose(p, -1);
-  const rightLeg = legPose(p, 1);
-  drawLeg(actor, art['leg-left'], leftLeg, false);
-  drawLeg(actor, art['leg-right'], rightLeg, false);
+  drawLeg(actor, art['leg-right'], rightLeg);
+  drawLeg(actor, art['leg-left'], leftLeg);
   actor.save();
   if (seatPressure > 0) clipSeatToPile(actor);
   transformBear();
   // The face, neck, ribbon and chest share one piece of artwork and one pose.
   // Fold the lower torso behind the rising knees so the feet clear its
   // silhouette before the legs extend again on the way to the rug.
-  const bellyCompression = p.seat * 24 + Math.max(0, p.tuck - .18) * 86 + p.plant * (1 - p.seat) * 12;
+  const bellyCompression = p.seat * 24 + Math.max(0, p.tuck - .18) * 44 + p.plant * (1 - p.seat) * 12;
   if (bellyCompression > 0) drawCore(actor, art.core, bellyCompression, .12 * p.plant * (1 - p.seat));
   else actor.drawImage(art.core, -143, -184, 285, 386);
   actor.restore();
-  drawLiftedLeg(actor, legLayer, art['leg-right'], rightLeg);
-  drawLiftedLeg(actor, legLayer, art['leg-left'], leftLeg);
-  drawLeg(actor, art['leg-left'], leftLeg, true);
-  drawLeg(actor, art['leg-right'], rightLeg, true);
+  drawForwardKnee(actor, legLayer, art['leg-right'], rightLeg);
+  drawForwardKnee(actor, legLayer, art['leg-left'], leftLeg);
   actor.restore();
 
   // Grade the bear independently. The box and room keep their original colors.
@@ -400,31 +400,36 @@ function startScene(hero: HTMLElement, track: HTMLElement, image: HTMLImageEleme
   scene.to(p, { y: 431, x: 1094, tilt: -4, squash: .96, left: 53,
     right: -59, elbowLeft: -24, elbowRight: 23, grip: 1, duration: .207 }, .02)
     // Push against the rim, bring the first knee up, and shift weight forward.
-    .to(p, { y: 340, x: 1123, tilt: 5, squash: 1.015, tuck: 1, step: .87,
-      left: 45, right: -41, elbowLeft: -26, elbowRight: 22, duration: .15 }, .227)
-    .to(p, { braceRight: 0, duration: .082 }, .325)
+    .to(p, { y: 340, x: 1123, tilt: 5, squash: 1.015, tuck: 1, step: .79,
+      left: 45, right: -54, elbowLeft: -26, elbowRight: 17, duration: .15 }, .227)
+    .to(p, { braceRight: 0, duration: .11 }, .302)
     .to(p, { leadExtension: 1, duration: .094 }, .348)
-    .to(p, { braceLeft: 0, duration: .075 }, .437)
-    .to(p, { y: 294, x: 1159, tilt: 9, tuck: 1.18, step: .28,
-      left: 32, right: -48, elbowLeft: -17, elbowRight: 27, duration: .072 }, .377)
-    .to(p, { x: 1188, tilt: 5, tuck: .60, step: -.38, duration: .092 }, .449)
+    .to(p, { braceLeft: 0, duration: .086 }, .397)
+    .to(p, { y: 294, x: 1159, tilt: 9, tuck: 1.04, step: -.44,
+      left: 32, right: -61, elbowLeft: 23, elbowRight: -53, wristRight: 12, duration: .072 }, .377)
+    .to(p, { x: 1188, tilt: 5, tuck: .62, step: -.84,
+      left: 46, right: -53, elbowLeft: 12, elbowRight: -35, wristRight: 4, duration: .092 }, .449)
     .to(p, { leadExtension: 0, duration: .13 }, .466)
     .to(p, { y: 616, duration: .202, ease: 'power1.in' }, .449)
     .to(p, { wallShadow: .23, duration: .15 }, .444)
     // Extend the legs on the way down; catch the landing with a short squash.
     .to(p, { x: 1203, tilt: -2, squash: .95, tuck: 0, step: 0,
-      left: 13, right: -12, elbowLeft: -7, elbowRight: 8, duration: .11, ease: 'power1.inOut' }, .541)
+      left: 27, right: -24, elbowLeft: -15, elbowRight: 16, wristRight: 0, duration: .11, ease: 'power1.inOut' }, .541)
     .to(p, { shadow: .96, duration: .115 }, .535)
-    .to(p, { plant: 1, duration: .054 }, .597)
-    .to(p, { y: 600, squash: 1, tilt: 1, duration: .083 }, .651)
-    // Raise the shoulder once. Three smaller elbow changes make the wave.
-    .to(p, { right: -105, elbowRight: -36, tilt: -3, duration: .080 }, .739)
-    .to(p, { elbowRight: -15, tilt: -2, duration: .040 }, .819)
-    .to(p, { elbowRight: -45, tilt: -3, duration: .042 }, .859)
-    .to(p, { elbowRight: -19, duration: .042 }, .901)
+    .to(p, { plant: 1, duration: .067 }, .584)
+    .to(p, { y: 600, x: 1198, squash: 1, tilt: 1, left: 16, right: -15,
+      elbowLeft: -7, elbowRight: 5, duration: .078 }, .651)
+    // The shoulder lifts first; the wrist follows each forearm change a beat later.
+    .to(p, { right: -88, tilt: -3, x: 1195, duration: .083 }, .729)
+    .to(p, { elbowRight: -63, wristRight: -12, duration: .074 }, .748)
+    .to(p, { elbowRight: -29, tilt: -1, x: 1199, duration: .042 }, .822)
+    .to(p, { wristRight: 11, duration: .045 }, .831)
+    .to(p, { elbowRight: -66, tilt: -3, x: 1195, duration: .041 }, .864)
+    .to(p, { wristRight: -11, duration: .049 }, .876)
+    .to(p, { elbowRight: -34, duration: .049 }, .905)
     .to(p, { x: seatOnRug.x, y: 683, tilt: -2, squash: .975, seat: 1, wallShadow: .14,
-      left: 27, right: -22, elbowLeft: -10, duration: .15 }, .914)
-    .to(p, { elbowRight: 8, duration: .12 }, .944)
+      left: 35, right: -31, elbowLeft: -31, duration: .131 }, .937)
+    .to(p, { elbowRight: 26, wristRight: 10, duration: .114 }, .954)
     .to(lens, { rise: 1, duration: .22 }, .18)
     .to(lens, { y: 92, rise: 0, duration: .25 }, .43)
     .to({}, { duration: .032 }, 1.068);
@@ -442,14 +447,26 @@ function startScene(hero: HTMLElement, track: HTMLElement, image: HTMLImageEleme
   align();
   paintBear(ctx, actor, art, p, legLayer);
   track.dataset.bear = 'ready';
+  // The next film can refresh ScrollTrigger while the hero is mid-gesture.
+  // Keep the playhead tween separate so that refresh cannot pause the gesture.
+  const playhead = { value: 0 };
+  let targetProgress = 0;
+  const scrub = gsap.quickTo(playhead, 'value', {
+    duration: .42, ease: 'expo.out', onUpdate: () => scene.progress(playhead.value),
+  });
+  const seek = ({ progress }: ScrollTrigger) => {
+    if (progress === targetProgress) return;
+    targetProgress = progress;
+    scrub(progress);
+  };
   const trigger = ScrollTrigger.create({
     id: 'joybox-hero-bear',
     trigger: track,
-    animation: scene,
     start: () => `top top-=${Math.max(0, -Number.parseFloat(getComputedStyle(hero).top))}`,
     end: 'bottom bottom',
-    scrub: .42,
     refreshPriority: 2,
+    onUpdate: seek,
+    onRefresh: seek,
     onRefreshInit() { image.style.removeProperty('object-position'); measure(); align(); },
   });
   const resize = new ResizeObserver(() => ScrollTrigger.refresh(true));
@@ -458,6 +475,7 @@ function startScene(hero: HTMLElement, track: HTMLElement, image: HTMLImageEleme
   return () => {
     resize.disconnect();
     trigger.kill();
+    scrub.tween.kill();
     scene.kill();
     ctx.clearRect(crop.x, crop.y, crop.width, crop.height);
     delete track.dataset.bear;
